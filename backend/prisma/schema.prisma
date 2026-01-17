@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  name               String?
+  isDriver           Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  
+  personalityProfile PersonalityProfile?
+  tripsAsDriver      Trip[]              @relation("DriverTrips")
+  bookings           Booking[]
+  
+  ratingsReceived    Rating[]            @relation("ReceivedRatings")
+  ratingsGiven       Rating[]            @relation("GivenRatings")
+}
+
+model PersonalityProfile {
+  id              Int     @id @default(autoincrement())
+  userId          String  @unique
+  bio             String?
+  talkativeness   Int     @default(3) // 1 to 5
+  musicPreference String?
+  smokingAllowed  Boolean @default(false)
+  petsAllowed     Boolean @default(false)
+  
+  user            User    @relation(fields: [userId], references: [id])
+}
+
+model Trip {
+  id              Int       @id @default(autoincrement())
+  driverId        String
+  origin          String
+  destination     String
+  departureTime   DateTime
+  availableSeats  Int
+  pricePerSeat    Float
+  createdAt       DateTime  @default(now())
+
+  driver          User      @relation("DriverTrips", fields: [driverId], references: [id])
+  bookings        Booking[]
+  
+  // Relations for ratings logic if ratings are per-trip
+  ratings         Rating[]
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  tripId    Int
+  passengerId String
+  createdAt DateTime @default(now())
+
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  passenger User     @relation(fields: [passengerId], references: [id])
+}
+
+model Rating {
+  id            Int      @id @default(autoincrement())
+  raterId       String
+  ratedUserId   String
+  tripId        Int?     // Optional context
+  score         Int      // 1-5
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  rater         User     @relation("GivenRatings", fields: [raterId], references: [id])
+  ratedUser     User     @relation("ReceivedRatings", fields: [ratedUserId], references: [id])
+  trip          Trip?    @relation(fields: [tripId], references: [id])
+}
