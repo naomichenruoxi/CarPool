@@ -59,8 +59,10 @@ const routeService = {
     async getTravelTime(p1, p2) {
         if (process.env.GOOGLE_MAPS_API_KEY) {
             try {
-                const originStr = `${p1[0]},${p1[1]}`;
-                const destStr = `${p2[0]},${p2[1]}`;
+                // Handle both coordinate arrays [lat, lng] and address strings
+                const originStr = Array.isArray(p1) ? `${p1[0]},${p1[1]}` : p1;
+                const destStr = Array.isArray(p2) ? `${p2[0]},${p2[1]}` : p2;
+
                 const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
                     params: {
                         origins: originStr,
@@ -69,16 +71,22 @@ const routeService = {
                     }
                 });
 
-                if (response.data.rows[0].elements[0].status === 'OK') {
+                if (response.data.rows[0]?.elements[0]?.status === 'OK') {
                     const durationValue = response.data.rows[0].elements[0].duration.value;
                     return Math.ceil(durationValue / 60); // Seconds to Minutes
+                } else {
+                    console.error('Distance Matrix API status:', response.data.rows[0]?.elements[0]?.status);
                 }
             } catch (error) {
                 console.error('Google Maps Matrix Error:', error.message);
             }
         }
-        // Fallback Haversine
-        return this.calculateHaversineTime(p1, p2);
+        // Fallback: If p1/p2 are arrays, use Haversine. Otherwise return mock value.
+        if (Array.isArray(p1) && Array.isArray(p2)) {
+            return this.calculateHaversineTime(p1, p2);
+        }
+        // Can't calculate without coords, return null
+        return null;
     },
 
     // --- MOCK HELPERS (Fallback) ---

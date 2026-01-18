@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getRideById, createBookingRequest } from "@/api/trips";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
+import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   ArrowRight,
@@ -57,6 +59,12 @@ const RideDetails = () => {
   const [requestMessage, setRequestMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // Pickup/Dropoff for route visualization
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [dropoffAddress, setDropoffAddress] = useState("");
+  const [dropoffCoords, setDropoffCoords] = useState<{ lat: number; lng: number } | null>(null);
+
   useEffect(() => {
     const fetchRide = async () => {
       if (!id) return;
@@ -99,7 +107,15 @@ const RideDetails = () => {
 
     setIsRequesting(true);
 
-    const result = await createBookingRequest(Number(ride.id), requestMessage);
+    const result = await createBookingRequest(Number(ride.id), {
+      initialMessage: requestMessage,
+      pickupAddress: pickupAddress || undefined,
+      pickupLat: pickupCoords?.lat,
+      pickupLng: pickupCoords?.lng,
+      dropoffAddress: dropoffAddress || undefined,
+      dropoffLat: dropoffCoords?.lat,
+      dropoffLng: dropoffCoords?.lng,
+    });
 
     if (result.success) {
       toast.success("Request sent! The driver has been notified.");
@@ -271,16 +287,43 @@ const RideDetails = () => {
                       <DialogHeader>
                         <DialogTitle>Request to Join Ride</DialogTitle>
                         <DialogDescription>
-                          Send a message to <strong>{ride.driver.name}</strong> to introduce yourself and coordinate pickup.
+                          Tell {ride.driver.name} where you need to be picked up and dropped off.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="py-4">
-                        <Textarea
-                          placeholder="Hi! I'd make a great passenger because..."
-                          value={requestMessage}
-                          onChange={(e) => setRequestMessage(e.target.value)}
-                          className="min-h-[100px]"
-                        />
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label>Pickup Location</Label>
+                          <AddressAutocomplete
+                            value={pickupAddress}
+                            onChange={(val, lat, lng) => {
+                              setPickupAddress(val);
+                              if (lat && lng) setPickupCoords({ lat, lng });
+                            }}
+                            placeholder="Where should they pick you up?"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Dropoff Location</Label>
+                          <AddressAutocomplete
+                            value={dropoffAddress}
+                            onChange={(val, lat, lng) => {
+                              setDropoffAddress(val);
+                              if (lat && lng) setDropoffCoords({ lat, lng });
+                            }}
+                            placeholder="Where should they drop you off?"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Message to Driver</Label>
+                          <Textarea
+                            placeholder="Hi! I'd love to join your ride..."
+                            value={requestMessage}
+                            onChange={(e) => setRequestMessage(e.target.value)}
+                            className="min-h-[80px]"
+                          />
+                        </div>
                       </div>
                       <DialogFooter>
                         <Button onClick={handleRequest} disabled={isRequesting}>
