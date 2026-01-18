@@ -59,7 +59,7 @@ const Search = () => {
         to: t.destination,
         date: new Date(t.departureTime).toISOString().split('T')[0],
         time: new Date(t.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        price: t.pricePerSeat,
+        price: Number.isFinite(t.estimatedPriceCad) ? t.estimatedPriceCad : t.pricePerSeat,
         availableSeats: t.availableSeats,
         seats: t.availableSeats, // Keep both for now to satisfy component and data expectations
         driver: {

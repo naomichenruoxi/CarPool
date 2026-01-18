@@ -18,6 +18,7 @@ router.post('/', authenticateUser, async (req, res) => {
         availableSeats,
         pricePerSeat
     } = req.body;
+    const parsedPrice = Number.parseFloat(pricePerSeat);
 
     try {
         // Ideally check if user is a driver
@@ -38,7 +39,7 @@ router.post('/', authenticateUser, async (req, res) => {
                     : Number.parseFloat(destinationLng),
                 departureTime: new Date(departureTime),
                 availableSeats: parseInt(availableSeats),
-                pricePerSeat: parseFloat(pricePerSeat)
+                pricePerSeat: Number.isFinite(parsedPrice) ? parsedPrice : 0
             }
         });
 

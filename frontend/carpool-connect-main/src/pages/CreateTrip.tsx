@@ -21,13 +21,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 
 const CreateTrip = () => {
   const navigate = useNavigate();
   const { role } = useUser();
   
   const [startLocation, setStartLocation] = useState("");
+  const [startLat, setStartLat] = useState<number | undefined>();
+  const [startLng, setStartLng] = useState<number | undefined>();
   const [destination, setDestination] = useState("");
+  const [destinationLat, setDestinationLat] = useState<number | undefined>();
+  const [destinationLng, setDestinationLng] = useState<number | undefined>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
   const [seats, setSeats] = useState("1");
@@ -92,12 +97,15 @@ const CreateTrip = () => {
                 <MapPin className="h-4 w-4 text-primary" />
                 Start Location
               </Label>
-              <Input
-                id="startLocation"
-                type="text"
-                placeholder="Enter pickup location"
+              <AddressAutocomplete
                 value={startLocation}
-                onChange={(e) => setStartLocation(e.target.value)}
+                onChange={(value, lat, lng) => {
+                  setStartLocation(value);
+                  setStartLat(lat);
+                  setStartLng(lng);
+                }}
+                placeholder="Enter pickup address"
+                country="ca"
                 className="h-12"
               />
             </div>
@@ -108,12 +116,15 @@ const CreateTrip = () => {
                 <MapPin className="h-4 w-4 text-accent" />
                 Destination
               </Label>
-              <Input
-                id="destination"
-                type="text"
-                placeholder="Enter destination"
+              <AddressAutocomplete
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                onChange={(value, lat, lng) => {
+                  setDestination(value);
+                  setDestinationLat(lat);
+                  setDestinationLng(lng);
+                }}
+                placeholder="Enter destination address"
+                country="ca"
                 className="h-12"
               />
             </div>

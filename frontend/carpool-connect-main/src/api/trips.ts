@@ -11,7 +11,6 @@ export interface TripData {
   time: string;
   seats?: number;
   role: "driver" | "carpooler";
-  price?: number;
   car?: string;
   amenities?: string[];
 }
@@ -46,7 +45,7 @@ export async function submitTrip(tripData: TripData): Promise<{ success: boolean
       destinationLng: tripData.destinationLng,
       departureTime: `${tripData.date}T${tripData.time}:00.000Z`, // Simplified ISO construction
       availableSeats: tripData.seats || 3,
-      pricePerSeat: tripData.price || 10,
+      pricePerSeat: 0,
     });
     return { success: true, tripId: response.data.id.toString() };
   } catch (error) {

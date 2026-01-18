@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { submitTrip } from "@/api/trips";
-import { Calendar, Car, Check, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
+import { Calendar, Car, Check, Clock, Loader2, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
 import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 
@@ -37,7 +37,6 @@ const OfferRide = () => {
     toLng: undefined as number | undefined,
     date: "",
     time: "",
-    price: "",
     seats: "4",
     car: "",
     amenities: [] as string[],
@@ -94,7 +93,6 @@ const OfferRide = () => {
       destinationLng: formData.toLng,
       date: formData.date as any, // Simple cast for now
       time: formData.time,
-      price: parseFloat(formData.price),
       seats: parseInt(formData.seats),
       car: formData.car,
       amenities: formData.amenities,
@@ -212,25 +210,8 @@ const OfferRide = () => {
                   </div>
                 </div>
 
-                {/* Price & Seats */}
+                {/* Seats */}
                 <div className="grid gap-6 sm:grid-cols-2">
-                  <div className="space-y-2.5">
-                    <Label htmlFor="price">Price per Seat ($)</Label>
-                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                      <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="price"
-                        name="price"
-                        type="number"
-                        min="1"
-                        placeholder="25"
-                        value={formData.price}
-                        onChange={handleChange}
-                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
-                        required
-                      />
-                    </div>
-                  </div>
                   <div className="space-y-2.5">
                     <Label htmlFor="seats">Available Seats</Label>
                     <div className="relative transition-all duration-300 focus-within:scale-[1.02]">

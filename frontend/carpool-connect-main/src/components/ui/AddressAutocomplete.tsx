@@ -19,7 +19,15 @@ interface AddressAutocompleteProps {
     country?: string;
 }
 
-const AddressAutocomplete = ({ value, onChange, onValidationChange, isValid, placeholder = "Search address...", className }: AddressAutocompleteProps) => {
+const AddressAutocomplete = ({
+    value,
+    onChange,
+    onValidationChange,
+    isValid,
+    placeholder = "Search address...",
+    className,
+    country
+}: AddressAutocompleteProps) => {
     const [open, setOpen] = useState(false);
 
     // CRITICAL FIX: Check if API Key and Script are actually available.
@@ -48,11 +56,29 @@ const AddressAutocomplete = ({ value, onChange, onValidationChange, isValid, pla
     }
 
     // If key exists, we render the smart component
-    return <GooglePlacesInput value={value} onChange={onChange} onValidationChange={onValidationChange} isValid={isValid} placeholder={placeholder} className={className} />;
+    return (
+        <GooglePlacesInput
+            value={value}
+            onChange={onChange}
+            onValidationChange={onValidationChange}
+            isValid={isValid}
+            placeholder={placeholder}
+            className={className}
+            country={country}
+        />
+    );
 };
 
 // Inner component that uses the hook (only rendered if API key is present)
-const GooglePlacesInput = ({ value, onChange, onValidationChange, isValid, placeholder, className }: AddressAutocompleteProps) => {
+const GooglePlacesInput = ({
+    value,
+    onChange,
+    onValidationChange,
+    isValid,
+    placeholder,
+    className,
+    country
+}: AddressAutocompleteProps) => {
     const [open, setOpen] = useState(false);
     const requestOptions = {
         types: ["address"],
