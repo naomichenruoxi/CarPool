@@ -31,8 +31,10 @@ const Search = () => {
         date: new Date(t.departureTime).toISOString().split('T')[0],
         time: new Date(t.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         price: t.pricePerSeat,
-        seats: t.availableSeats,
+        availableSeats: t.availableSeats,
+        seats: t.availableSeats, // Keep both for now to satisfy component and data expectations
         driver: {
+          id: t.driver?.id, // Pass ID for linking
           name: t.driver?.name || "Driver",
           rating: 5.0,
           trips: 0,
