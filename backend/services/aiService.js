@@ -9,7 +9,7 @@ const generateMatchExplanation = async (matchMetrics) => {
         const { detour, overlap, origin, destination, driverName } = matchMetrics;
 
         const prompt = `
-      You are a helpful carpool assistant. Explain why this ride match is good for the passenger in one sentence (max 20 words).
+      You are a helpful Pathr assistant. Explain why this ride match is good for the passenger in one sentence (max 20 words).
       Be enthusiastic and mention key benefits.
       
       Match Details:

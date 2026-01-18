@@ -1,6 +1,6 @@
 # Project Setup Guide
 
-Follow these steps to set up and run the CarPool application on a new machine.
+Follow these steps to set up and run the Pathr application on a new machine.
 
 ## Prerequisites
 -   **Node.js** (v18 or higher)
@@ -10,7 +10,7 @@ Follow these steps to set up and run the CarPool application on a new machine.
 ## 1. Clone the Repository
 ```bash
 git clone <your-repo-url>
-cd CarPool
+cd Pathr
 ```
 
 ## 2. Backend Setup
@@ -71,6 +71,7 @@ The frontend runs on port `5174` (or `5173`).
     ```env
     VITE_SUPABASE_URL="https://[ref].supabase.co"
     VITE_SUPABASE_KEY="[anon-public-key]"
+    VITE_GOOGLE_MAPS_API_KEY="[your-google-maps-key]"
     ```
     > **Note:** This key is safe to be public (starts with `eyJ...`).
 

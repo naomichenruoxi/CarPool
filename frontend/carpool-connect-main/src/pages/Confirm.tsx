@@ -29,11 +29,11 @@ const Confirm = () => {
 
     try {
       const result = await confirmRide("trip-123");
-      
+
       if (result.success) {
         toast({
           title: "Ride Confirmed!",
-          description: "Your carpool ride has been booked successfully.",
+          description: "Your Pathr ride has been booked successfully.",
         });
         navigate("/");
       }
@@ -70,7 +70,7 @@ const Confirm = () => {
           <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden mb-6">
             <div className="p-6 space-y-4">
               <h2 className="font-semibold text-lg text-foreground">Trip Summary</h2>
-              
+
               {/* Route */}
               <div className="space-y-3">
                 <div className="flex items-start gap-3">

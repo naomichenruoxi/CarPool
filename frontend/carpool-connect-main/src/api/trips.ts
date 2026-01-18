@@ -87,8 +87,27 @@ export async function confirmRide(tripId: string): Promise<{ success: boolean; c
   };
 }
 
-// Get Ride by ID (Stub - for RideDetails migration later)
+// Request a Ride (Booking Request)
+export async function createBookingRequest(tripId: number, initialMessage?: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    await api.post('/bookings', { tripId, initialMessage });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Booking request failed:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to send booking request"
+    };
+  }
+}
+
+// Get Ride by ID
 export async function getRideById(id: string): Promise<any> {
-  // TODO: Implement
-  return null;
+  try {
+    const response = await api.get(`/trips/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get trip:", error);
+    return null;
+  }
 }

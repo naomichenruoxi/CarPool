@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -112,6 +112,10 @@ export default {
       "reveal": {
         "0%": { opacity: "0", transform: "translateY(30px) scale(0.95)" },
         "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+      },
+      "progress": {
+        "0%": { transform: "scaleX(0)", transformOrigin: "left" },
+        "100%": { transform: "scaleX(1)", transformOrigin: "left" },
       },
     },
   },

@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { submitTrip } from "@/api/trips";
-import { Calendar, Car, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
+import { Calendar, Car, Check, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 
 const amenityOptions = [
   "AC",
@@ -52,12 +52,15 @@ const OfferRide = () => {
   };
 
   const handleAmenityToggle = (amenity: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      amenities: prev.amenities.includes(amenity)
-        ? prev.amenities.filter((a) => a !== amenity)
-        : [...prev.amenities, amenity],
-    }));
+    setFormData((prev) => {
+      const current = prev.amenities || [];
+      return {
+        ...prev,
+        amenities: current.includes(amenity)
+          ? current.filter((a) => a !== amenity)
+          : [...current, amenity],
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,35 +123,30 @@ const OfferRide = () => {
             </CardHeader>
             <CardContent className="pt-8">
               <form onSubmit={handleSubmit} className="space-y-8">
+
                 {/* Route */}
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2.5">
                     <Label htmlFor="from" className="text-sm font-medium">From</Label>
                     <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
-                      <Input
-                        id="from"
-                        name="from"
-                        placeholder="Departure city"
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary z-10" />
+                      <AddressAutocomplete
                         value={formData.from}
-                        onChange={handleChange}
+                        onChange={(val) => setFormData(prev => ({ ...prev, from: val }))}
+                        placeholder="Departure city"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
-                        required
                       />
                     </div>
                   </div>
                   <div className="space-y-2.5">
                     <Label htmlFor="to" className="text-sm font-medium">To</Label>
                     <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500" />
-                      <Input
-                        id="to"
-                        name="to"
-                        placeholder="Destination city"
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500 z-10" />
+                      <AddressAutocomplete
                         value={formData.to}
-                        onChange={handleChange}
+                        onChange={(val) => setFormData(prev => ({ ...prev, to: val }))}
+                        placeholder="Destination city"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
-                        required
                       />
                     </div>
                   </div>
@@ -247,29 +245,31 @@ const OfferRide = () => {
                 <div className="space-y-4">
                   <Label className="text-base font-semibold">Amenities</Label>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    {amenityOptions.map((amenity) => (
-                      <div
-                        key={amenity}
-                        className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer hover:bg-primary/5 ${formData.amenities.includes(amenity)
-                          ? "border-primary bg-primary/5"
-                          : "border-border/50 bg-background/30"
-                          }`}
-                        onClick={() => handleAmenityToggle(amenity)}
-                      >
-                        <Checkbox
-                          id={amenity}
-                          checked={formData.amenities.includes(amenity)}
-                          onCheckedChange={() => handleAmenityToggle(amenity)}
-                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        <Label
-                          htmlFor={amenity}
-                          className="text-sm font-medium cursor-pointer flex-1"
+                    {amenityOptions.map((amenity) => {
+                      const isSelected = (formData.amenities || []).includes(amenity);
+                      return (
+                        <div
+                          key={amenity}
+                          className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer select-none ${isSelected
+                            ? "border-primary bg-primary/5 shadow-sm shadow-primary/10"
+                            : "border-border/50 bg-background/30 hover:bg-primary/5"
+                            }`}
+                          onClick={() => handleAmenityToggle(amenity)}
                         >
-                          {amenity}
-                        </Label>
-                      </div>
-                    ))}
+                          <div
+                            className={`h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${isSelected
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-primary/50"
+                              }`}
+                          >
+                            {isSelected && <Check className="h-3 w-3" />}
+                          </div>
+                          <span className="text-sm font-medium flex-1">
+                            {amenity}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
