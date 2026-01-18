@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import SearchForm from "@/components/rides/SearchForm";
 import { Reveal } from "@/components/ui/Reveal";
-import { ArrowRight, Car, Leaf, MapPin, Shield, Users, Wallet } from "lucide-react";
+import { ArrowRight, Car, Leaf, MapPin, Shield, Users, Wallet, Search } from "lucide-react";
 
 const features = [
   {
@@ -100,26 +99,23 @@ const Index = () => {
               </p>
             </Reveal>
 
-            <Reveal width="100%" delay={300}>
-              <div className="mt-12 p-1">
-                <div className="rounded-2xl p-2 shadow-2xl ring-1 ring-white/10 hover:scale-[1.01] transition-transform duration-500">
-                  <div className="bg-black/30 rounded-xl p-4 md:p-6 backdrop-blur-xl border border-white/10 shadow-inner">
-                    <SearchForm variant="hero" />
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-
             <Reveal width="100%" delay={400}>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
                 <Button
+                  size="lg"
+                  className="h-14 px-8 text-lg font-semibold bg-white text-primary hover:bg-white/90 shadow-xl hover:scale-105 transition-all w-full sm:w-auto"
+                  onClick={() => navigate("/signup")}
+                >
+                  Get Started
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+                <Button
                   variant="heroOutline"
                   size="lg"
-                  className="h-14 px-8 text-lg border-2 hover:bg-white/20 transition-all duration-300"
-                  onClick={() => setRoleAndGo("driver", "/offer")}
+                  className="h-14 px-8 text-lg border-2 hover:bg-white/20 transition-all duration-300 w-full sm:w-auto"
+                  onClick={() => navigate("/login")} // Require login to browse
                 >
-                  Offer a Ride
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  Log In to Browse
                 </Button>
               </div>
             </Reveal>
@@ -127,8 +123,38 @@ const Index = () => {
         </div>
       </section>
 
+      {/* How It Works Section - NEW */}
+      <section className="py-24 bg-muted/30 relative">
+        <div className="container">
+          <Reveal width="100%">
+            <div className="text-center mb-16">
+              <h2 className="font-display text-4xl font-bold text-foreground">How It Works</h2>
+              <p className="mt-4 text-xl text-muted-foreground">Start your journey in 3 simple steps.</p>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              { title: "1. Create Profile", text: "Sign up and verify your details to join our trusted community.", icon: Users },
+              { title: "2. Find or Offer", text: "Search for a ride that matches your route, or offer your empty seats.", icon: Search },
+              { title: "3. Travel Together", text: "Meet your co-travelers, save money, and enjoy the ride.", icon: Car }
+            ].map((step, i) => (
+              <Reveal key={i} delay={i * 200} width="100%">
+                <div className="flex flex-col items-center text-center group">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 text-2xl font-bold shadow-sm group-hover:scale-110 transition-transform">
+                    <step.icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 font-display">{step.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed max-w-xs">{step.text}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section - Animated & Floating */}
-      <section className="relative z-20 mt-8 md:-mt-12 pb-20 pointer-events-none">
+      <section className="relative z-20 py-20 pointer-events-none">
         <div className="container pointer-events-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {stats.map((stat, index) => (
@@ -226,19 +252,19 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    onClick={() => setRoleAndGo("carpooler", "/search")}
+                    onClick={() => navigate("/signup")}
                     className="h-14 px-8 text-lg border-white/40 text-white hover:bg-white/20 hover:text-white transition-all duration-300"
                   >
-                    Find a Ride
+                    Join to Find
                   </Button>
 
                   <Button
                     size="lg"
                     className="h-14 px-8 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300
                       bg-white text-primary hover:bg-white/90"
-                    onClick={() => setRoleAndGo("driver", "/offer")}
+                    onClick={() => navigate("/signup")}
                   >
-                    Offer a Ride
+                    Join to Offer
                   </Button>
                 </div>
               </div>

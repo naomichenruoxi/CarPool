@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 import Search from "./pages/Search";
 import RideDetails from "./pages/RideDetails";
 import OfferRide from "./pages/OfferRide";
@@ -34,6 +35,7 @@ const App = () => (
               <main className="flex-1">
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/profile-questions" element={<ProfileQuestions />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/ride/:id" element={<RideDetails />} />
