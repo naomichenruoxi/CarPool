@@ -87,10 +87,30 @@ export async function confirmRide(tripId: string): Promise<{ success: boolean; c
   };
 }
 
-// Request a Ride (Booking Request)
-export async function createBookingRequest(tripId: number, initialMessage?: string): Promise<{ success: boolean; error?: string }> {
+// Request a Ride (Booking Request) with pickup/dropoff locations
+export async function createBookingRequest(
+  tripId: number,
+  options?: {
+    initialMessage?: string;
+    pickupAddress?: string;
+    pickupLat?: number;
+    pickupLng?: number;
+    dropoffAddress?: string;
+    dropoffLat?: number;
+    dropoffLng?: number;
+  }
+): Promise<{ success: boolean; error?: string }> {
   try {
-    await api.post('/bookings', { tripId, initialMessage });
+    await api.post('/bookings', {
+      tripId,
+      initialMessage: options?.initialMessage,
+      pickupAddress: options?.pickupAddress,
+      pickupLat: options?.pickupLat,
+      pickupLng: options?.pickupLng,
+      dropoffAddress: options?.dropoffAddress,
+      dropoffLat: options?.dropoffLat,
+      dropoffLng: options?.dropoffLng,
+    });
     return { success: true };
   } catch (error: any) {
     console.error("Booking request failed:", error);
@@ -109,5 +129,53 @@ export async function getRideById(id: string): Promise<any> {
   } catch (error) {
     console.error("Failed to get trip:", error);
     return null;
+  }
+}
+
+// Get booking details with detour calculation and AI match summary
+export async function getBookingDetails(bookingId: number): Promise<{
+  booking: any;
+  detourInfo: {
+    originalDuration: number;
+    modifiedDuration: number;
+    extraDuration: number;
+    detourPercentage: number;
+  } | null;
+  compatibilitySummary: string | null;
+} | null> {
+  try {
+    const response = await api.get(`/bookings/${bookingId}/details`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get booking details:", error);
+    return null;
+  }
+}
+
+// Update booking status (approve/reject)
+export async function updateBookingStatus(
+  bookingId: number,
+  status: 'APPROVED' | 'REJECTED'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await api.patch(`/bookings/${bookingId}/status`, { status });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update booking status:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to update booking"
+    };
+  }
+}
+
+// Get all booking requests for current user's trips (as driver)
+export async function getDriverBookingRequests(): Promise<any[]> {
+  try {
+    const response = await api.get('/bookings/driver-requests');
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get driver booking requests:", error);
+    return [];
   }
 }

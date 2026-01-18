@@ -72,6 +72,14 @@ model Booking {
   
   status    String   @default("PENDING") // PENDING, APPROVED, REJECTED, CANCELLED
   messages  Message[]
+  
+  // Passenger's pickup/dropoff locations
+  pickupAddress   String?
+  pickupLat       Float?
+  pickupLng       Float?
+  dropoffAddress  String?
+  dropoffLat      Float?
+  dropoffLng      Float?
 }
 
 model Message {

@@ -26,6 +26,10 @@ const SearchForm = ({
   const [to, setTo] = useState(initialTo);
   const [date, setDate] = useState(initialDate);
 
+  // Address validation states (optional for search, but provides visual feedback)
+  const [fromValidated, setFromValidated] = useState(false);
+  const [toValidated, setToValidated] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -60,6 +64,8 @@ const SearchForm = ({
             <AddressAutocomplete
               value={from}
               onChange={(val) => setFrom(val)}
+              onValidationChange={setFromValidated}
+              isValid={fromValidated}
               placeholder="Departure city"
               className={`pl-10 h-12 transition-all duration-300 ${isHero
                 ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
@@ -78,6 +84,8 @@ const SearchForm = ({
             <AddressAutocomplete
               value={to}
               onChange={(val) => setTo(val)}
+              onValidationChange={setToValidated}
+              isValid={toValidated}
               placeholder="Destination city"
               className={`pl-10 h-12 transition-all duration-300 ${isHero
                 ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
