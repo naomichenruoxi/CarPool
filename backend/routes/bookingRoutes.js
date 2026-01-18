@@ -25,6 +25,13 @@ router.post('/', authenticateUser, async (req, res) => {
       const existing = await tx.booking.findFirst({
         where: { tripId: tripIdNumber, passengerId: req.user.id }
       });
+      if (existing) {
+        const err = new Error('Booking already exists');
+        err.status = 409;
+        throw err;
+      }
+
+      return tx.booking.create({
       if (existing) throw { status: 409, message: 'Booking request already exists' };
 
       // Create Booking (PENDING) with pickup/dropoff locations
@@ -41,7 +48,6 @@ router.post('/', authenticateUser, async (req, res) => {
           dropoffLng: dropoffLng ? parseFloat(dropoffLng) : null,
         }
       });
-
       // Create Initial Message if provided
       if (initialMessage) {
         console.log("Creating initial message:", initialMessage);
