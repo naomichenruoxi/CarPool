@@ -1,6 +1,8 @@
 const prisma = require('./services/db');
 
 async function main() {
+    console.log("Seeding test users...");
+
     // Create Driver
     const driver = await prisma.user.upsert({
         where: { email: 'driver@test.com' },
@@ -20,8 +22,8 @@ async function main() {
             },
             tripsAsDriver: {
                 create: {
-                    origin: 'Downtown',
-                    destination: 'Airport',
+                    origin: 'Vancouver',
+                    destination: 'Seattle',
                     departureTime: new Date(Date.now() + 86400000), // Tomorrow
                     availableSeats: 3,
                     pricePerSeat: 15.0,
@@ -50,7 +52,7 @@ async function main() {
         },
     });
 
-    console.log({ driver, passenger });
+    console.log("Seeded:", { driver: driver.id, passenger: passenger.id });
 }
 
 main()

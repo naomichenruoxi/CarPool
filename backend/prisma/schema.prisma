@@ -32,6 +32,10 @@ model PersonalityProfile {
   smokingAllowed  Boolean @default(false)
   petsAllowed     Boolean @default(false)
   
+  hometown        String?
+  workplace       String?
+  languages       String?
+  
   user            User    @relation(fields: [userId], references: [id])
 }
 

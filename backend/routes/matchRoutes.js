@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../services/db');
-const { generateMatchExplanation } = require('../services/aiService');
+const { generateMatchExplanation, generateCompatibilitySummary } = require('../services/aiService');
 const authenticateUser = require('../middleware/auth');
 
 // Find Matches & Explain them
@@ -65,6 +65,31 @@ router.post('/', authenticateUser, async (req, res) => {
     } catch (error) {
         console.error('Match Error:', error);
         res.status(500).json({ error: 'Failed to find matches' });
+    }
+});
+
+// Check Compatibility
+// POST /api/matches/compatibility
+router.post('/compatibility', authenticateUser, async (req, res) => {
+    const { targetUserId } = req.body;
+    const currentUserId = req.user.id;
+
+    try {
+        const [currentUser, targetUser] = await Promise.all([
+            prisma.user.findUnique({ where: { id: currentUserId }, include: { personalityProfile: true } }),
+            prisma.user.findUnique({ where: { id: targetUserId }, include: { personalityProfile: true } })
+        ]);
+
+        if (!currentUser || !targetUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const summary = await generateCompatibilitySummary(currentUser, targetUser);
+
+        res.json({ summary });
+    } catch (error) {
+        console.error('Compatibility Check Error:', error);
+        res.status(500).json({ error: 'Failed to generate compatibility' });
     }
 });
 
