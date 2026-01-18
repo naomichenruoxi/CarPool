@@ -1,9 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Car, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
+  const { user, signOut } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -39,9 +41,21 @@ const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {/* TODO: Replace with actual auth state */}
-          <Button variant="ghost">Log in</Button>
-          <Button variant="default">Sign up</Button>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-foreground">Hi, {user.email?.split('@')[0]}</span>
+              <Button variant="ghost" onClick={signOut}>Log out</Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link to="/login">
+                <Button variant="ghost">Log in</Button>
+              </Link>
+              <Link to="/signup">
+                <Button variant="default">Sign up</Button>
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
