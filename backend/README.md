@@ -1,6 +1,6 @@
-# Carpool Backend
+# Pathr Backend
 
-Node.js + Express + Prisma + Supabase (PostgreSQL) backend for the Carpool Application.
+Node.js + Express + Prisma + Supabase (PostgreSQL) backend for the Pathr Application.
 
 ## Service Features
 - **Authentication**: JWT verification via Supabase.

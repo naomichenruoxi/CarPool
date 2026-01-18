@@ -13,6 +13,14 @@ const authenticateUser = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
+    // DEV MODE BYPASS
+    // console.log("Auth NodeEnv:", process.env.NODE_ENV, "Token:", token); 
+    if ((process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) && token.startsWith('mock-token-')) {
+        const userId = token.replace('mock-token-', '');
+        req.user = { id: userId, email: `mock-${userId}@test.com` };
+        return next();
+    }
+
     try {
         const { data: { user }, error } = await supabase.auth.getUser(token);
 

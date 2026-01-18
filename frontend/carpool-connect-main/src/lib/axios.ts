@@ -11,6 +11,12 @@ api.interceptors.request.use(async (config) => {
 
     if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
+    } else {
+        // Fallback to mock token for dev testing
+        const mockToken = localStorage.getItem('mock_token');
+        if (mockToken) {
+            config.headers.Authorization = `Bearer ${mockToken}`;
+        }
     }
 
     return config;

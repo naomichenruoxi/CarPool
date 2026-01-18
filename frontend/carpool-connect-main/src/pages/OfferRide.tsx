@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { submitTrip } from "@/api/trips";
-import { Calendar, Car, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
+import { Calendar, Car, Check, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
 
 const amenityOptions = [
@@ -52,12 +51,15 @@ const OfferRide = () => {
   };
 
   const handleAmenityToggle = (amenity: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      amenities: prev.amenities.includes(amenity)
-        ? prev.amenities.filter((a) => a !== amenity)
-        : [...prev.amenities, amenity],
-    }));
+    setFormData((prev) => {
+      const current = prev.amenities || [];
+      return {
+        ...prev,
+        amenities: current.includes(amenity)
+          ? current.filter((a) => a !== amenity)
+          : [...current, amenity],
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -247,29 +249,31 @@ const OfferRide = () => {
                 <div className="space-y-4">
                   <Label className="text-base font-semibold">Amenities</Label>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    {amenityOptions.map((amenity) => (
-                      <div
-                        key={amenity}
-                        className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer hover:bg-primary/5 ${formData.amenities.includes(amenity)
-                          ? "border-primary bg-primary/5"
-                          : "border-border/50 bg-background/30"
-                          }`}
-                        onClick={() => handleAmenityToggle(amenity)}
-                      >
-                        <Checkbox
-                          id={amenity}
-                          checked={formData.amenities.includes(amenity)}
-                          onCheckedChange={() => handleAmenityToggle(amenity)}
-                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        <Label
-                          htmlFor={amenity}
-                          className="text-sm font-medium cursor-pointer flex-1"
+                    {amenityOptions.map((amenity) => {
+                      const isSelected = (formData.amenities || []).includes(amenity);
+                      return (
+                        <div
+                          key={amenity}
+                          className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer select-none ${isSelected
+                            ? "border-primary bg-primary/5 shadow-sm shadow-primary/10"
+                            : "border-border/50 bg-background/30 hover:bg-primary/5"
+                            }`}
+                          onClick={() => handleAmenityToggle(amenity)}
                         >
-                          {amenity}
-                        </Label>
-                      </div>
-                    ))}
+                          <div
+                            className={`h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${isSelected
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-primary/50"
+                              }`}
+                          >
+                            {isSelected && <Check className="h-3 w-3" />}
+                          </div>
+                          <span className="text-sm font-medium flex-1">
+                            {amenity}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

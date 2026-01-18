@@ -200,7 +200,7 @@ const Profile = () => {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <p className="text-foreground/80 leading-relaxed text-lg font-light">
-                                    {profile.personalityProfile?.bio || "Hey there! I'm using CarPool to save the planet and meet cool people."}
+                                    {profile.personalityProfile?.bio || "Hey there! I'm using Pathr to save the planet and meet cool people."}
                                 </p>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

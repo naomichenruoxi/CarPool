@@ -29,7 +29,7 @@ router.post('/sync', authenticateUser, async (req, res) => {
         res.json(user);
     } catch (error) {
         console.error('Error syncing user:', error);
-        res.status(500).json({ error: 'Failed to sync user' });
+        res.status(500).json({ error: 'Failed to sync user', details: error.message });
     }
 });
 
