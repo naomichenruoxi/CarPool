@@ -12,7 +12,7 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            navigate("/"); // Redirect to home if logged in
+            navigate("/dashboard"); // Redirect to dashboard if logged in
         }
     }, [user, navigate]);
 

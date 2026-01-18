@@ -15,17 +15,21 @@ const Header = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const navLinks = [
-    { href: "/search", label: "Find a Ride" },
-    { href: "/offer", label: "Offer a Ride" },
-  ];
+  const navLinks = user
+    ? [
+      { href: "/dashboard", label: "Dashboard" },
+      { href: "/search", label: "Find a Ride" },
+      { href: "/offer", label: "Offer a Ride" },
+      { href: "/matches", label: "Matches" },
+    ]
+    : [];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-950/60 shadow-sm transition-all duration-300">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105 duration-300 group">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 transition-transform hover:scale-105 duration-300 group">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-emerald-400 shadow-md group-hover:shadow-lg transition-all">
             <Car className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
@@ -39,8 +43,8 @@ const Header = () => {
               <Button
                 variant={isActive(link.href) ? "secondary" : "ghost"}
                 className={`text-base font-medium transition-all duration-200 ${isActive(link.href)
-                    ? "bg-primary/10 text-primary hover:bg-primary/20"
-                    : "text-muted-foreground hover:text-primary hover:bg-transparent"
+                  ? "bg-primary/10 text-primary hover:bg-primary/20"
+                  : "text-muted-foreground hover:text-primary hover:bg-transparent"
                   }`}
               >
                 {link.label}
@@ -118,17 +122,33 @@ const Header = () => {
               {theme === "dark" ? <Sun className="h-5 w-5 text-orange-500" /> : <Moon className="h-5 w-5 text-blue-400" />}
               {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </Button>
+
             <div className="flex flex-col gap-2 mt-2">
-              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="outline" className="w-full h-12 text-lg">
-                  Log in
-                </Button>
-              </Link>
-              <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full h-12 text-lg bg-gradient-to-r from-primary to-emerald-600 border-0 text-white">
-                  Sign up
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/profile/me" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full h-12 text-lg">
+                      Profile ({user.email?.split('@')[0]})
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" onClick={() => { signOut(); setIsMenuOpen(false); }} className="w-full h-12 text-lg text-destructive hover:bg-destructive/10">
+                    Log out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full h-12 text-lg">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full h-12 text-lg bg-gradient-to-r from-primary to-emerald-600 border-0 text-white">
+                      Sign up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
