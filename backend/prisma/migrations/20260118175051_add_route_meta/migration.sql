@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Trip" ADD COLUMN     "destinationLat" DOUBLE PRECISION,
+ADD COLUMN     "destinationLng" DOUBLE PRECISION,
+ADD COLUMN     "originLat" DOUBLE PRECISION,
+ADD COLUMN     "originLng" DOUBLE PRECISION,
+ADD COLUMN     "routeMeta" JSONB;

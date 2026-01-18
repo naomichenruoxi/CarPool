@@ -20,6 +20,7 @@ export interface MatchResult {
   availableSeats: number;
   pricePerSeat: number;
   driver: {
+    id: string;
     name: string;
     personalityProfile: any;
   };
@@ -48,12 +49,24 @@ export async function submitTrip(tripData: TripData): Promise<{ success: boolean
 }
 
 // Search Matches (Passenger)
-export async function searchMatches(searchData: { from: string, to: string, time?: string }): Promise<MatchResult[]> {
+export async function searchMatches(searchData: {
+  from: string,
+  to: string,
+  time?: string,
+  fromLat?: number,
+  fromLng?: number,
+  toLat?: number,
+  toLng?: number
+}): Promise<MatchResult[]> {
   try {
     const response = await api.post('/matches', {
       origin: searchData.from,
       destination: searchData.to,
-      time: searchData.time
+      time: searchData.time,
+      originLat: searchData.fromLat,
+      originLng: searchData.fromLng,
+      destinationLat: searchData.toLat,
+      destinationLng: searchData.toLng
     });
     return response.data;
   } catch (error) {

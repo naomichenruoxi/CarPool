@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
 import SearchForm from "@/components/rides/SearchForm";
 import RideCard from "@/components/rides/RideCard";
-import { getTrips } from "@/api/trips";
+import { searchMatches, type MatchResult } from "@/api/trips";
 import { type Ride } from "@/lib/mockData";
 import { Loader2, SearchX, Car } from "lucide-react";
 
@@ -27,32 +27,53 @@ const Search = () => {
   const to = searchParams.get("to") || "";
   const date = searchParams.get("date") || "";
 
-  const handleSearch = async (searchFrom: string, searchTo: string, searchDate: string) => {
+
+
+  // ... (inside component)
+
+  const handleSearch = async (
+    searchFrom: string,
+    searchTo: string,
+    searchDate: string,
+    fromLat?: number,
+    fromLng?: number,
+    toLat?: number,
+    toLng?: number
+  ) => {
     setIsLoading(true);
     setHasSearched(true);
 
     try {
-      const results = await getTrips({ from: searchFrom, to: searchTo, date: searchDate });
+      // Use the Advanced Matrix Matching Algorithm (searchMatches)
+      // This sends coordinates and gets back efficient, ranked matches
+      const results = await searchMatches({
+        from: searchFrom,
+        to: searchTo,
+        time: searchDate,
+        fromLat, fromLng, toLat, toLng
+      });
 
       // Adapt API data to Ride interface
-      const adaptedRides: Ride[] = results.map((t: any) => ({
-        id: t.id.toString(),
-        from: t.origin,
-        to: t.destination,
-        date: new Date(t.departureTime).toISOString().split('T')[0],
-        time: new Date(t.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        price: t.pricePerSeat,
-        availableSeats: t.availableSeats,
-        seats: t.availableSeats, // Keep both for now to satisfy component and data expectations
+      const adaptedRides: Ride[] = results.map((m: MatchResult) => ({
+        id: m.id.toString(),
+        from: m.origin,
+        to: m.destination,
+        date: new Date(m.departureTime).toISOString().split('T')[0],
+        time: new Date(m.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        price: m.pricePerSeat,
+        availableSeats: m.availableSeats,
+        seats: m.availableSeats,
         driver: {
-          id: t.driver?.id, // Pass ID for linking
-          name: t.driver?.name || "Driver",
-          rating: 5.0,
+          id: m.driver?.id || "unknown", // Need driver ID in MatchResult driver object? API returns driver object.
+          name: m.driver?.name || "Driver",
+          rating: 5.0, // Mock for now
           trips: 0,
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.driver?.name || 'driver'}`
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.driver?.name || 'driver'}`
         },
         amenities: [],
-        car: "Standard Car"
+        car: "Standard Car",
+        // Ideally we'd pass matchMetrics too, but RideCard ignores them for now. 
+        // We can add them as a 'matchExplanation' prop if we extend Ride interface later.
       }));
 
       setRides(adaptedRides);

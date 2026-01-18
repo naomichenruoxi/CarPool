@@ -57,6 +57,10 @@ model Trip {
   driver          User      @relation("DriverTrips", fields: [driverId], references: [id])
   bookings        Booking[]
   
+  // Cache for Matrix Algorithm
+  // Stores: { waypoints: [{lat, lng, type}], matrix: [[duration]] }
+  routeMeta       Json?
+  
   // Relations for ratings logic if ratings are per-trip
   ratings         Rating[]
 }

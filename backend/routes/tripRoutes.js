@@ -3,10 +3,12 @@ const router = express.Router();
 const prisma = require('../services/db');
 const { extraDetourKm, haversineDistanceKm } = require('../services/distance');
 const authenticateUser = require('../middleware/auth');
+const routeMatrixService = require('../services/routeMatrixService');
 
 // Create a new trip (Driver only)
 // POST /api/trips
 router.post('/', authenticateUser, async (req, res) => {
+    // ... [destructuring params]
     const {
         origin,
         destination,
@@ -20,8 +22,14 @@ router.post('/', authenticateUser, async (req, res) => {
     } = req.body;
 
     try {
-        // Ideally check if user is a driver
-        // const user = await prisma.user.findUnique(...)
+        // Initialize Matrix Cache
+        // Pass coordinates if they exist
+        const oCoords = (originLat && originLng) ? [Number(originLat), Number(originLng)] : null;
+        const dCoords = (destinationLat && destinationLng) ? [Number(destinationLat), Number(destinationLng)] : null;
+
+        const routeMeta = await routeMatrixService.initializeRoute(origin, destination, oCoords, dCoords);
+        // Add initial route path (indices 0 -> 1)
+        routeMeta.currentRouteIndices = [0, 1];
 
         const trip = await prisma.trip.create({
             data: {
@@ -38,9 +46,11 @@ router.post('/', authenticateUser, async (req, res) => {
                     : Number.parseFloat(destinationLng),
                 departureTime: new Date(departureTime),
                 availableSeats: parseInt(availableSeats),
-                pricePerSeat: parseFloat(pricePerSeat)
+                pricePerSeat: parseFloat(pricePerSeat),
+                routeMeta // Save initialized cache
             }
         });
+
 
         res.status(201).json(trip);
     } catch (error) {
