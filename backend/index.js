@@ -6,6 +6,7 @@ const userRoutes = require('./routes/userRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
+const routeRoutes = require('./routes/routeRoutes');
 const matchRoutes = require('./routes/matchRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 

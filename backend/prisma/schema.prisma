@@ -45,6 +45,10 @@ model Trip {
   driverId        String
   origin          String
   destination     String
+  originLat       Float?
+  originLng       Float?
+  destinationLat  Float?
+  destinationLng  Float?
   departureTime   DateTime
   availableSeats  Int
   pricePerSeat    Float
