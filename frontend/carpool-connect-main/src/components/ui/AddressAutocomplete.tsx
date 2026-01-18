@@ -16,6 +16,7 @@ interface AddressAutocompleteProps {
     isValid?: boolean;
     placeholder?: string;
     className?: string;
+    country?: string;
 }
 
 const AddressAutocomplete = ({ value, onChange, onValidationChange, isValid, placeholder = "Search address...", className }: AddressAutocompleteProps) => {
@@ -53,6 +54,10 @@ const AddressAutocomplete = ({ value, onChange, onValidationChange, isValid, pla
 // Inner component that uses the hook (only rendered if API key is present)
 const GooglePlacesInput = ({ value, onChange, onValidationChange, isValid, placeholder, className }: AddressAutocompleteProps) => {
     const [open, setOpen] = useState(false);
+    const requestOptions = {
+        types: ["address"],
+        ...(country ? { componentRestrictions: { country } } : {})
+    };
     const {
         ready,
         value: searchValue,
@@ -60,7 +65,7 @@ const GooglePlacesInput = ({ value, onChange, onValidationChange, isValid, place
         setValue,
         clearSuggestions,
     } = usePlacesAutocomplete({
-        requestOptions: {},
+        requestOptions,
         debounce: 300,
         defaultValue: value,
     });

@@ -27,12 +27,30 @@ const Search = () => {
   const to = searchParams.get("to") || "";
   const date = searchParams.get("date") || "";
 
-  const handleSearch = async (searchFrom: string, searchTo: string, searchDate: string) => {
+  const handleSearch = async (
+    searchFrom: string,
+    searchTo: string,
+    searchDate: string,
+    coords?: {
+      fromLat?: number;
+      fromLng?: number;
+      toLat?: number;
+      toLng?: number;
+    }
+  ) => {
     setIsLoading(true);
     setHasSearched(true);
 
     try {
-      const results = await getTrips({ from: searchFrom, to: searchTo, date: searchDate });
+      const results = await getTrips({
+        from: searchFrom,
+        to: searchTo,
+        date: searchDate,
+        riderOriginLat: coords?.fromLat,
+        riderOriginLng: coords?.fromLng,
+        riderDestinationLat: coords?.toLat,
+        riderDestinationLng: coords?.toLng
+      });
 
       // Adapt API data to Ride interface
       const adaptedRides: Ride[] = results.map((t: any) => ({

@@ -30,7 +30,11 @@ const OfferRide = () => {
 
   const [formData, setFormData] = useState({
     from: "",
+    fromLat: undefined as number | undefined,
+    fromLng: undefined as number | undefined,
     to: "",
+    toLat: undefined as number | undefined,
+    toLng: undefined as number | undefined,
     date: "",
     time: "",
     price: "",
@@ -67,6 +71,8 @@ const OfferRide = () => {
     });
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -81,7 +87,11 @@ const OfferRide = () => {
     // TODO: Replace with actual API call to create ride
     const result = await submitTrip({
       startLocation: formData.from,
+      originLat: formData.fromLat,
+      originLng: formData.fromLng,
       destination: formData.to,
+      destinationLat: formData.toLat,
+      destinationLng: formData.toLng,
       date: formData.date as any, // Simple cast for now
       time: formData.time,
       price: parseFloat(formData.price),
@@ -179,6 +189,7 @@ const OfferRide = () => {
                         type="date"
                         value={formData.date}
                         onChange={handleChange}
+                        min={today}
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
                         required
                       />

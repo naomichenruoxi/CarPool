@@ -3,6 +3,10 @@ import api from "@/lib/axios";
 export interface TripData {
   startLocation: string;
   destination: string;
+  originLat?: number;
+  originLng?: number;
+  destinationLat?: number;
+  destinationLng?: number;
   date: Date; // or string
   time: string;
   seats?: number;
@@ -36,6 +40,10 @@ export async function submitTrip(tripData: TripData): Promise<{ success: boolean
     const response = await api.post('/trips', {
       origin: tripData.startLocation,
       destination: tripData.destination,
+      originLat: tripData.originLat,
+      originLng: tripData.originLng,
+      destinationLat: tripData.destinationLat,
+      destinationLng: tripData.destinationLng,
       departureTime: `${tripData.date}T${tripData.time}:00.000Z`, // Simplified ISO construction
       availableSeats: tripData.seats || 3,
       pricePerSeat: tripData.price || 10,
@@ -63,12 +71,24 @@ export async function searchMatches(searchData: { from: string, to: string, time
 }
 
 // Get All Trips (List)
-export async function getTrips(filters?: { from?: string; to?: string; date?: string }): Promise<any[]> {
+export async function getTrips(filters?: {
+  from?: string;
+  to?: string;
+  date?: string;
+  riderOriginLat?: number;
+  riderOriginLng?: number;
+  riderDestinationLat?: number;
+  riderDestinationLng?: number;
+}): Promise<any[]> {
   try {
     const params: any = {};
     if (filters?.from) params.origin = filters.from;
     if (filters?.to) params.destination = filters.to;
     if (filters?.date) params.date = filters.date;
+    if (Number.isFinite(filters?.riderOriginLat)) params.riderOriginLat = filters?.riderOriginLat;
+    if (Number.isFinite(filters?.riderOriginLng)) params.riderOriginLng = filters?.riderOriginLng;
+    if (Number.isFinite(filters?.riderDestinationLat)) params.riderDestinationLat = filters?.riderDestinationLat;
+    if (Number.isFinite(filters?.riderDestinationLng)) params.riderDestinationLng = filters?.riderDestinationLng;
 
     const response = await api.get('/trips', { params });
     return response.data;

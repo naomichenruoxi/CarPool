@@ -11,7 +11,17 @@ interface SearchFormProps {
   initialFrom?: string;
   initialTo?: string;
   initialDate?: string;
-  onSearch?: (from: string, to: string, date: string) => void;
+  onSearch?: (
+    from: string,
+    to: string,
+    date: string,
+    coords?: {
+      fromLat?: number;
+      fromLng?: number;
+      toLat?: number;
+      toLng?: number;
+    }
+  ) => void;
 }
 
 const SearchForm = ({
@@ -23,7 +33,11 @@ const SearchForm = ({
 }: SearchFormProps) => {
   const navigate = useNavigate();
   const [from, setFrom] = useState(initialFrom);
+  const [fromLat, setFromLat] = useState<number | undefined>();
+  const [fromLng, setFromLng] = useState<number | undefined>();
   const [to, setTo] = useState(initialTo);
+  const [toLat, setToLat] = useState<number | undefined>();
+  const [toLng, setToLng] = useState<number | undefined>();
   const [date, setDate] = useState(initialDate);
 
   // Address validation states (optional for search, but provides visual feedback)
@@ -34,7 +48,7 @@ const SearchForm = ({
     e.preventDefault();
 
     if (onSearch) {
-      onSearch(from, to, date);
+      onSearch(from, to, date, { fromLat, fromLng, toLat, toLng });
     } else {
       const params = new URLSearchParams();
       if (from) params.set("from", from);
