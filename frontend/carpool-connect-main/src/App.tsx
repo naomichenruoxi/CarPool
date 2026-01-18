@@ -70,20 +70,67 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <UserProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
-      </UserProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+import { useLoadScript } from "@react-google-maps/api";
+
+// ...
+
+const App = () => {
+  // Use hook instead of Component to avoid wrapping everything if key is missing (graceful degradation)
+  // OR just wrap. Let's wrap.
+  // Actually, useJsApiLoader or LoadScript from @react-google-maps/api
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <UserProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {/* We will load the script here. If no key, it won't load, autocompletes won't work but won't crash apps unless valid key is required for render. */}
+            <GoogleMapsWrapper>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </GoogleMapsWrapper>
+          </TooltipProvider>
+        </UserProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
+
+const libraries: ("places")[] = ["places"];
+
+const GoogleMapsWrapper = ({ children }: { children: React.ReactNode }) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  // If no key, just render children (autocomplete will be disabled/plain input)
+  if (!apiKey) return <>{children}</>;
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: apiKey,
+    libraries,
+  });
+
+  if (loadError) {
+    console.error("Google Maps Load Error:", loadError);
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4 p-4 text-center">
+        <div className="text-destructive font-bold text-xl">Google Maps Failed to Load</div>
+        <p className="text-muted-foreground max-w-md">
+          There is an issue with the API Key provided.
+          Please check your console for details or verify your <code>.env</code> file.
+        </p>
+        <p className="text-sm font-mono bg-muted p-2 rounded text-left">
+          {loadError.message}
+        </p>
+      </div>
+    );
+  }
+
+  if (!isLoaded) return <LoadingScreen />;
+
+  return <>{children}</>;
+};
 
 export default App;

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { submitTrip } from "@/api/trips";
 import { Calendar, Car, Check, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 
 const amenityOptions = [
   "AC",
@@ -122,35 +123,30 @@ const OfferRide = () => {
             </CardHeader>
             <CardContent className="pt-8">
               <form onSubmit={handleSubmit} className="space-y-8">
+
                 {/* Route */}
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2.5">
                     <Label htmlFor="from" className="text-sm font-medium">From</Label>
                     <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
-                      <Input
-                        id="from"
-                        name="from"
-                        placeholder="Departure city"
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary z-10" />
+                      <AddressAutocomplete
                         value={formData.from}
-                        onChange={handleChange}
+                        onChange={(val) => setFormData(prev => ({ ...prev, from: val }))}
+                        placeholder="Departure city"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
-                        required
                       />
                     </div>
                   </div>
                   <div className="space-y-2.5">
                     <Label htmlFor="to" className="text-sm font-medium">To</Label>
                     <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
-                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500" />
-                      <Input
-                        id="to"
-                        name="to"
-                        placeholder="Destination city"
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500 z-10" />
+                      <AddressAutocomplete
                         value={formData.to}
-                        onChange={handleChange}
+                        onChange={(val) => setFormData(prev => ({ ...prev, to: val }))}
+                        placeholder="Destination city"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
-                        required
                       />
                     </div>
                   </div>
