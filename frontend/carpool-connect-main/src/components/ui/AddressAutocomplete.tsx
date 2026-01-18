@@ -12,11 +12,13 @@ import { cn } from "@/lib/utils";
 interface AddressAutocompleteProps {
     value: string;
     onChange: (value: string, lat?: number, lng?: number) => void;
+    onValidationChange?: (isValid: boolean) => void;
+    isValid?: boolean;
     placeholder?: string;
     className?: string;
 }
 
-const AddressAutocomplete = ({ value, onChange, placeholder = "Search address...", className }: AddressAutocompleteProps) => {
+const AddressAutocomplete = ({ value, onChange, onValidationChange, isValid, placeholder = "Search address...", className }: AddressAutocompleteProps) => {
     const [open, setOpen] = useState(false);
 
     // CRITICAL FIX: Check if API Key and Script are actually available.
@@ -45,11 +47,11 @@ const AddressAutocomplete = ({ value, onChange, placeholder = "Search address...
     }
 
     // If key exists, we render the smart component
-    return <GooglePlacesInput value={value} onChange={onChange} placeholder={placeholder} className={className} />;
+    return <GooglePlacesInput value={value} onChange={onChange} onValidationChange={onValidationChange} isValid={isValid} placeholder={placeholder} className={className} />;
 };
 
 // Inner component that uses the hook (only rendered if API key is present)
-const GooglePlacesInput = ({ value, onChange, placeholder, className }: AddressAutocompleteProps) => {
+const GooglePlacesInput = ({ value, onChange, onValidationChange, isValid, placeholder, className }: AddressAutocompleteProps) => {
     const [open, setOpen] = useState(false);
     const {
         ready,
@@ -62,8 +64,6 @@ const GooglePlacesInput = ({ value, onChange, placeholder, className }: AddressA
         debounce: 300,
         defaultValue: value,
     });
-
-
 
     // Sync with parent value updates
     useEffect(() => {
@@ -81,9 +81,13 @@ const GooglePlacesInput = ({ value, onChange, placeholder, className }: AddressA
             const results = await getGeocode({ address });
             const { lat, lng } = await getLatLng(results[0]);
             onChange(address, lat, lng);
+            // Mark as valid when user selects from dropdown
+            onValidationChange?.(true);
         } catch (error) {
             console.error("Error: ", error);
             onChange(address);
+            // Still mark as invalid if geocoding fails
+            onValidationChange?.(false);
         }
     };
 
@@ -97,14 +101,23 @@ const GooglePlacesInput = ({ value, onChange, placeholder, className }: AddressA
                             value={searchValue}
                             onChange={(e) => {
                                 setValue(e.target.value);
-                                onChange(e.target.value); // Sync to parent immediately
+                                onChange(e.target.value);
+                                // Invalidate when user types (they need to select again)
+                                onValidationChange?.(false);
                                 if (!open) setOpen(true);
                             }}
-                            // CRITICAL FIX: Never disable the input. Allow typing even if "ready" is false.
                             disabled={false}
-                            className={cn("w-full", className)}
+                            className={cn("w-full pr-8", className, isValid === false && searchValue.length > 0 && "border-orange-400 focus:border-orange-400")}
                             onFocus={() => setOpen(true)}
                         />
+                        {/* Validation indicator */}
+                        {searchValue.length > 0 && (
+                            isValid ? (
+                                <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
+                            ) : (
+                                <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400 animate-pulse" />
+                            )
+                        )}
                         {!ready && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground opacity-50" />}
                     </div>
                 </div>

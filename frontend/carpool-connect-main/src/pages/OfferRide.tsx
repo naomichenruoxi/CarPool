@@ -24,6 +24,10 @@ const OfferRide = () => {
   const { user, loading } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Address validation states
+  const [fromValidated, setFromValidated] = useState(false);
+  const [toValidated, setToValidated] = useState(false);
+
   const [formData, setFormData] = useState({
     from: "",
     to: "",
@@ -65,6 +69,13 @@ const OfferRide = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate addresses are selected from Google
+    if (!fromValidated || !toValidated) {
+      toast.error("Please select valid addresses from the suggestions for both From and To locations.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     // TODO: Replace with actual API call to create ride
@@ -133,7 +144,9 @@ const OfferRide = () => {
                       <AddressAutocomplete
                         value={formData.from}
                         onChange={(val) => setFormData(prev => ({ ...prev, from: val }))}
-                        placeholder="Departure city"
+                        onValidationChange={setFromValidated}
+                        isValid={fromValidated}
+                        placeholder="Departure address"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
                       />
                     </div>
@@ -145,7 +158,9 @@ const OfferRide = () => {
                       <AddressAutocomplete
                         value={formData.to}
                         onChange={(val) => setFormData(prev => ({ ...prev, to: val }))}
-                        placeholder="Destination city"
+                        onValidationChange={setToValidated}
+                        isValid={toValidated}
+                        placeholder="Destination address"
                         className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
                       />
                     </div>

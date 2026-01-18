@@ -20,6 +20,7 @@ import ProfileQuestions from "./pages/ProfileQuestions";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
+import DriverRequests from "./pages/DriverRequests";
 
 import { useUser } from "@/context/UserContext";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
@@ -61,6 +62,7 @@ const AppRoutes = () => {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/profile/me" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/driver-requests" element={<DriverRequests />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

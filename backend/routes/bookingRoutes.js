@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../services/db');
 const authenticateUser = require('../middleware/auth');
+const { generateCompatibilitySummary } = require('../services/aiService');
+const routeService = require('../services/routeService');
 
 // Create a booking for a trip
 // POST /api/bookings
 router.post('/', authenticateUser, async (req, res) => {
-  const { tripId, initialMessage } = req.body;
+  const { tripId, initialMessage, pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng } = req.body;
   const tripIdNumber = Number.parseInt(tripId, 10);
 
   if (!Number.isFinite(tripIdNumber)) {
@@ -25,12 +27,18 @@ router.post('/', authenticateUser, async (req, res) => {
       });
       if (existing) throw { status: 409, message: 'Booking request already exists' };
 
-      // Create Booking (PENDING)
+      // Create Booking (PENDING) with pickup/dropoff locations
       const created = await tx.booking.create({
         data: {
           tripId: tripIdNumber,
           passengerId: req.user.id,
-          status: 'PENDING'
+          status: 'PENDING',
+          pickupAddress,
+          pickupLat: pickupLat ? parseFloat(pickupLat) : null,
+          pickupLng: pickupLng ? parseFloat(pickupLng) : null,
+          dropoffAddress,
+          dropoffLat: dropoffLat ? parseFloat(dropoffLat) : null,
+          dropoffLng: dropoffLng ? parseFloat(dropoffLng) : null,
         }
       });
 
@@ -118,6 +126,94 @@ router.patch('/:id/status', authenticateUser, async (req, res) => {
   }
 });
 
+// Get detailed booking info for driver (with detour calculation and AI match summary)
+// GET /api/bookings/:id/details
+router.get('/:id/details', authenticateUser, async (req, res) => {
+  const bookingId = Number(req.params.id);
+
+  if (!Number.isFinite(bookingId)) {
+    return res.status(400).json({ error: 'Invalid booking id' });
+  }
+
+  try {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        passenger: { include: { personalityProfile: true } },
+        trip: {
+          include: {
+            driver: { include: { personalityProfile: true } }
+          }
+        },
+        messages: {
+          orderBy: { createdAt: 'asc' },
+          include: { sender: true }
+        }
+      }
+    });
+
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    // Only driver or passenger can view details
+    const isDriver = booking.trip.driverId === req.user.id;
+    const isPassenger = booking.passengerId === req.user.id;
+    if (!isDriver && !isPassenger) {
+      return res.status(403).json({ error: 'Not authorized to view this booking' });
+    }
+
+    // Calculate detour if pickup/dropoff coordinates are available
+    let detourInfo = null;
+    if (booking.pickupLat && booking.pickupLng && booking.dropoffLat && booking.dropoffLng) {
+      try {
+        // Get original route time
+        const originalTime = await routeService.getTravelTime(
+          booking.trip.origin,
+          booking.trip.destination
+        );
+
+        // Get modified route time (origin -> pickup -> dropoff -> destination)
+        const toPickup = await routeService.getTravelTime(booking.trip.origin, booking.pickupAddress);
+        const pickupToDropoff = await routeService.getTravelTime(booking.pickupAddress, booking.dropoffAddress);
+        const dropoffToDest = await routeService.getTravelTime(booking.dropoffAddress, booking.trip.destination);
+        const modifiedTime = toPickup + pickupToDropoff + dropoffToDest;
+
+        detourInfo = {
+          originalDuration: Math.round(originalTime),
+          modifiedDuration: Math.round(modifiedTime),
+          extraDuration: Math.round(modifiedTime - originalTime),
+          detourPercentage: Math.round(((modifiedTime - originalTime) / originalTime) * 100)
+        };
+      } catch (routeError) {
+        console.error('Error calculating detour:', routeError);
+        detourInfo = { error: 'Could not calculate detour' };
+      }
+    }
+
+    // Generate AI compatibility summary
+    let compatibilitySummary = null;
+    try {
+      compatibilitySummary = await generateCompatibilitySummary(
+        booking.trip.driver,
+        booking.passenger
+      );
+    } catch (aiError) {
+      console.error('Error generating compatibility summary:', aiError);
+      compatibilitySummary = 'Could not generate match summary';
+    }
+
+    res.json({
+      booking,
+      detourInfo,
+      compatibilitySummary
+    });
+  } catch (error) {
+    console.error('Error fetching booking details:', error);
+    res.status(500).json({ error: 'Failed to fetch booking details' });
+  }
+});
+
 // List bookings for current user
 // GET /api/bookings/me
 router.get('/me', authenticateUser, async (req, res) => {
@@ -137,6 +233,34 @@ router.get('/me', authenticateUser, async (req, res) => {
   } catch (error) {
     console.error('Error fetching bookings:', error);
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
+
+// Get all booking requests for driver's trips
+// GET /api/bookings/driver-requests
+router.get('/driver-requests', authenticateUser, async (req, res) => {
+  try {
+    // Find all trips where user is driver, then get their bookings
+    const bookings = await prisma.booking.findMany({
+      where: {
+        trip: {
+          driverId: req.user.id
+        }
+      },
+      include: {
+        passenger: { include: { personalityProfile: true } },
+        trip: true,
+        messages: {
+          orderBy: { createdAt: 'asc' },
+          take: 1 // Just get first message for preview
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error fetching driver booking requests:', error);
+    res.status(500).json({ error: 'Failed to fetch booking requests' });
   }
 });
 
