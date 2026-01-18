@@ -21,6 +21,7 @@ const Header = () => {
       { href: "/search", label: "Find a Ride" },
       { href: "/offer", label: "Offer a Ride" },
       { href: "/matches", label: "Matches" },
+      { href: "/chat", label: "Messages" },
     ]
     : [];
 
@@ -30,10 +31,8 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-950/60 shadow-sm transition-all duration-300">
       <div className="container flex h-16 items-center justify-between">
         <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 transition-transform hover:scale-105 duration-300 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-emerald-400 shadow-md group-hover:shadow-lg transition-all">
-            <Car className="h-5 w-5 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="font-display text-xl font-bold bg-gradient-to-r from-primary to-emerald-500 bg-clip-text text-transparent">CarPool</span>
+          <img src="/logo_final.png?v=3" alt="Pathr Logo" className="h-10 w-10 rounded-full object-cover shadow-sm transition-transform group-hover:scale-105" />
+          <span className="font-display text-xl font-bold text-emerald-600 dark:text-emerald-400">Pathr</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -72,7 +71,7 @@ const Header = () => {
                   Hi, {user.email?.split('@')[0]}
                 </Button>
               </Link>
-              <Button variant="ghost" onClick={signOut} className="text-muted-foreground hover:text-destructive">Log out</Button>
+              <Button variant="ghost" onClick={async () => { await signOut(); window.location.href = '/'; }} className="text-muted-foreground hover:text-destructive">Log out</Button>
             </div>
           ) : (
             <div className="flex items-center gap-3">
@@ -131,7 +130,7 @@ const Header = () => {
                       Profile ({user.email?.split('@')[0]})
                     </Button>
                   </Link>
-                  <Button variant="ghost" onClick={() => { signOut(); setIsMenuOpen(false); }} className="w-full h-12 text-lg text-destructive hover:bg-destructive/10">
+                  <Button variant="ghost" onClick={async () => { await signOut(); setIsMenuOpen(false); window.location.href = '/'; }} className="w-full h-12 text-lg text-destructive hover:bg-destructive/10">
                     Log out
                   </Button>
                 </>

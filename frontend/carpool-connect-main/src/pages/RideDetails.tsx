@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getRideById, bookRide, type Ride } from "@/lib/mockData";
+import { getRideById, createBookingRequest } from "@/api/trips";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,42 +18,97 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+
+// Define locally if not exporting from elsewhere, or match API
+interface Ride {
+  id: string;
+  driver: {
+    name: string;
+    avatar: string;
+    rating: number;
+    trips: number;
+  };
+  from: string;
+  to: string;
+  date: string;
+  time: string;
+  price: number;
+  seats: number;
+  availableSeats: number;
+  car: string;
+  amenities: string[];
+}
 
 const RideDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [ride, setRide] = useState<Ride | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isBooking, setIsBooking] = useState(false);
-  const [selectedSeats, setSelectedSeats] = useState(1);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [requestMessage, setRequestMessage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchRide = async () => {
       if (!id) return;
-      
-      // TODO: Replace with actual API call
+
       const result = await getRideById(id);
-      setRide(result || null);
+
+      if (result) {
+        // Map Backend -> Frontend
+        const dateObj = new Date(result.departureTime);
+        const mapped: Ride = {
+          id: String(result.id),
+          driver: {
+            name: result.driver?.name || "Driver",
+            avatar: result.driver?.avatar || "",
+            rating: 5.0, // Mock
+            trips: 10 // Mock
+          },
+          from: result.origin,
+          to: result.destination,
+          date: dateObj.toISOString(),
+          time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          price: result.pricePerSeat,
+          seats: 4, // Default if missing
+          availableSeats: result.availableSeats,
+          car: "Sedan", // Default
+          amenities: ["AC", "Music"] // Default
+        };
+        setRide(mapped);
+      } else {
+        setRide(null);
+      }
       setIsLoading(false);
     };
 
     fetchRide();
   }, [id]);
 
-  const handleBook = async () => {
+  const handleRequest = async () => {
     if (!ride) return;
-    
-    setIsBooking(true);
-    
-    // TODO: Replace with actual booking API call
-    const result = await bookRide(ride.id, selectedSeats);
-    
+
+    setIsRequesting(true);
+
+    const result = await createBookingRequest(Number(ride.id), requestMessage);
+
     if (result.success) {
-      toast.success(result.message);
+      toast.success("Request sent! The driver has been notified.");
+      setIsDialogOpen(false);
     } else {
-      toast.error("Failed to book ride. Please try again.");
+      toast.error(result.error);
     }
-    
-    setIsBooking(false);
+
+    setIsRequesting(false);
   };
 
   if (isLoading) {
@@ -145,7 +200,7 @@ const RideDetails = () => {
                     <h3 className="text-lg font-semibold text-foreground">{ride.driver.name}</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Star className="h-4 w-4 fill-accent text-accent" />
-                      <span>{ride.driver.rating} rating</span>
+                      <span>{ride.driver.rating.toFixed(1)} rating</span>
                       <span>·</span>
                       <span>{ride.driver.trips} trips</span>
                     </div>
@@ -198,58 +253,52 @@ const RideDetails = () => {
                 </div>
 
                 <div className="mt-6 space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Number of seats</label>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setSelectedSeats(Math.max(1, selectedSeats - 1))}
-                        disabled={selectedSeats <= 1}
-                      >
-                        -
-                      </Button>
-                      <span className="w-12 text-center text-lg font-semibold">{selectedSeats}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setSelectedSeats(Math.min(ride.availableSeats, selectedSeats + 1))}
-                        disabled={selectedSeats >= ride.availableSeats}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </div>
-
                   <div className="rounded-lg bg-muted p-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        ${ride.price} × {selectedSeats} seat{selectedSeats > 1 ? "s" : ""}
-                      </span>
-                      <span className="font-medium text-foreground">
-                        ${ride.price * selectedSeats}
-                      </span>
+                      <span className="text-muted-foreground">1 seat</span>
+                      <span className="font-medium text-foreground">${ride.price}</span>
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    onClick={handleBook}
-                    disabled={isBooking}
-                  >
-                    {isBooking ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Booking...
-                      </>
-                    ) : (
-                      `Book for $${ride.price * selectedSeats}`
-                    )}
-                  </Button>
+                  {/* Request Modal */}
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="w-full" size="lg">
+                        Request to Join
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Request to Join Ride</DialogTitle>
+                        <DialogDescription>
+                          Send a message to <strong>{ride.driver.name}</strong> to introduce yourself and coordinate pickup.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <Textarea
+                          placeholder="Hi! I'd make a great passenger because..."
+                          value={requestMessage}
+                          onChange={(e) => setRequestMessage(e.target.value)}
+                          className="min-h-[100px]"
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={handleRequest} disabled={isRequesting}>
+                          {isRequesting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            "Send Request"
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
 
                   <p className="text-center text-xs text-muted-foreground">
-                    You won't be charged until the driver confirms
+                    You'll be notified when the driver approves your request.
                   </p>
                 </div>
               </CardContent>

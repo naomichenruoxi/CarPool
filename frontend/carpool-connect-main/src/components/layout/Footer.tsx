@@ -20,7 +20,7 @@ const Footer = () => {
                 <Car className="h-6 w-6 text-white" />
               </div>
               <span className="font-display text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 group-hover:from-primary group-hover:to-emerald-500 transition-all duration-300">
-                CarPool
+                Pathr
               </span>
             </Link>
             <p className="text-muted-foreground leading-relaxed max-w-xs">
@@ -90,7 +90,7 @@ const Footer = () => {
 
         <div className="mt-16 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="flex items-center gap-1">
-            &copy; {new Date().getFullYear()} CarPool Inc. Made with <span className="text-red-500 animate-pulse">❤</span> at UBC Vancouver.
+            &copy; {new Date().getFullYear()} Pathr Inc. Made with <span className="text-red-500 animate-pulse">❤</span> at UBC Vancouver.
           </p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>

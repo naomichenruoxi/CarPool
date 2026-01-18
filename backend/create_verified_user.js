@@ -14,7 +14,7 @@ if (!supabaseServiceKey || !supabaseServiceKey.startsWith('sb_secret')) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function createTestUser() {
-    const email = 'demo@carpool.com';
+    const email = 'demo@pathr.com';
     const password = 'Password123!';
 
     console.log(`Attempting to create verified user: ${email}...`);

@@ -26,11 +26,7 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: "50K+", label: "Active Riders", icon: Users },
-  { value: "10K+", label: "Daily Rides", icon: Car },
-  { value: "2M+", label: "CO₂ Saved (kg)", icon: Leaf },
-];
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -42,110 +38,149 @@ const Index = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-hero-gradient py-24 md:py-36">
-        {/* Dynamic Mesh Background - Boosted Visibility */}
+      {/* Hero Section - Redesigned for WOW */}
+      <section className="relative overflow-hidden bg-hero-gradient min-h-[calc(100vh-64px)] flex items-center py-20">
+        {/* Dynamic Mesh Background - Subtle & Deep */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] animate-mesh opacity-100 will-change-transform">
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_60%)]" />
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/40 blur-[60px] rounded-full mix-blend-screen" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/40 blur-[60px] rounded-full mix-blend-screen" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180%] h-[180%] animate-mesh opacity-60 will-change-transform">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_70%)]" />
+            <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-primary/30 blur-[100px] rounded-full mix-blend-screen animate-pulse duration-[4000ms]" />
+            <div className="absolute bottom-1/3 right-1/3 w-[600px] h-[600px] bg-accent/20 blur-[120px] rounded-full mix-blend-screen animate-pulse duration-[6000ms]" />
           </div>
         </div>
 
-        {/* Floating Blobs (Preserved & Enhanced) */}
-        <div className="absolute inset-0 opacity-40 pointer-events-none">
-          <div className="absolute -left-20 top-20 h-96 w-96 rounded-full bg-accent/50 blur-3xl animate-float will-change-transform" />
-          <div className="absolute right-0 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary-foreground/40 blur-3xl animate-float-delayed will-change-transform" />
-        </div>
-
-        {/* Floating 3D Icons */}
+        {/* Floating Icons - 3D Depth Effect */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          {/* Car Icon - Top Left */}
-          <Car className="hidden md:block absolute top-32 left-[5%] w-32 h-32 text-primary/30 -rotate-12 animate-float dark:text-white/20" />
-          {/* MapPin Icon - Bottom Right */}
-          <MapPin className="hidden md:block absolute bottom-40 right-[10%] w-24 h-24 text-accent/40 rotate-12 animate-float-delayed dark:text-white/20" />
-          {/* Leaf Icon - floating somewhere distinct */}
-          <Leaf className="hidden md:block absolute top-1/2 right-[20%] w-16 h-16 text-emerald-500/40 rotate-45 animate-float duration-[7000ms] dark:text-emerald-400/30" />
+          <Car className="hidden md:block absolute top-20 left-[10%] w-40 h-40 text-primary/20 -rotate-12 animate-float blur-[1px]" />
+          <MapPin className="hidden md:block absolute bottom-32 right-[15%] w-32 h-32 text-accent/30 rotate-12 animate-float-delayed blur-[1px]" />
+          <Leaf className="hidden md:block absolute top-1/2 right-[5%] w-20 h-20 text-emerald-400/20 rotate-45 animate-float duration-[8000ms]" />
 
-          {/* Driving Car Animation - Visible on ALL screens and FASTER */}
-          <div className="absolute bottom-32 left-0 w-full animate-drive opacity-90 dark:opacity-70 z-10 will-change-transform">
-            <Car className="w-16 h-16 md:w-24 md:h-24 text-primary/80 dark:text-white/80" strokeWidth={1.5} />
+          {/* Moving Car across bottom - Increased Visibility */}
+          <div className="absolute bottom-10 left-0 w-full animate-drive opacity-90 z-10">
+            <Car className="w-32 h-32 text-white/30 drop-shadow-lg" strokeWidth={1.5} />
           </div>
         </div>
 
         <div className="container relative z-10">
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto max-w-5xl text-center">
             <Reveal width="100%">
               <div className="flex justify-center">
-                <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-sm text-primary-foreground backdrop-blur-md shadow-inner transition-transform hover:scale-105">
-                  <Car className="h-4 w-4" />
-                  <span className="font-medium tracking-wide">The smarter way to travel</span>
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-2 text-sm font-semibold text-white backdrop-blur-md shadow-lg transition-transform hover:scale-105 hover:bg-white/20">
+                  <span className="relative flex h-2 w-2 mr-1">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  The smarter way to travel
                 </div>
               </div>
             </Reveal>
 
             <Reveal width="100%" delay={100}>
-              <h1 className="font-display text-5xl font-extrabold tracking-tight text-white md:text-7xl drop-shadow-sm leading-tight">
-                <span className="text-glow">Share Rides,</span>
-                <br />
-                <span className="text-emerald-400 font-extrabold pb-2">Save the Planet</span>
+              <h1 className="font-display text-5xl font-black tracking-tight text-white md:text-8xl drop-shadow-lg leading-[1.1] mb-6">
+                Share Rides, <br />
+                <span className="text-emerald-300 drop-shadow-md">Save the Planet</span>
               </h1>
             </Reveal>
 
             <Reveal width="100%" delay={200}>
-              <p className="mt-8 text-lg text-primary-foreground/90 md:text-2xl font-light max-w-2xl mx-auto leading-relaxed">
-                Join thousands of commuters saving money and reducing emissions.
-                Find your perfect ride or offer seats today.
+              <p className="mt-6 text-xl text-emerald-50 md:text-2xl font-light max-w-3xl mx-auto leading-relaxed opacity-90">
+                Join thousands of commuters making a difference.
+                Whether you're a driver or a passenger, <span className="font-semibold text-white">Pathr</span> connects you instantly.
               </p>
             </Reveal>
 
-            <Reveal width="100%" delay={400}>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Reveal width="100%" delay={300}>
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Button
                   size="lg"
-                  className="h-14 px-8 text-lg font-semibold bg-white text-primary hover:bg-white/90 shadow-xl hover:scale-105 transition-all w-full sm:w-auto"
+                  className="h-16 px-10 text-xl font-bold bg-white text-emerald-900 hover:bg-emerald-50 shadow-2xl hover:scale-105 hover:shadow-white/20 transition-all active:scale-95 w-full sm:w-auto rounded-2xl"
                   onClick={() => navigate("/signup")}
                 >
-                  Get Started
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  Get Started Now
+                  <ArrowRight className="h-6 w-6 ml-2" />
                 </Button>
                 <Button
                   variant="heroOutline"
                   size="lg"
-                  className="h-14 px-8 text-lg border-2 hover:bg-white/20 transition-all duration-300 w-full sm:w-auto"
-                  onClick={() => navigate("/login")} // Require login to browse
+                  className="h-16 px-10 text-xl font-semibold border-2 border-white/30 text-white hover:bg-white/10 transition-all w-full sm:w-auto rounded-2xl backdrop-blur-sm"
+                  onClick={() => navigate("/login")}
                 >
-                  Log In to Browse
+                  Browser Rides
                 </Button>
               </div>
             </Reveal>
+
+            {/* Quick Stats Teaser */}
+            <Reveal width="100%" delay={500}>
+              <div className="mt-16 flex justify-center gap-12 text-white/50 text-sm font-medium tracking-widest uppercase">
+                <div><span className="text-white font-bold text-lg block">50k+</span> Riders</div>
+                <div><span className="text-white font-bold text-lg block">100%</span> Verified</div>
+                <div><span className="text-white font-bold text-lg block">4.9/5</span> Rating</div>
+              </div>
+            </Reveal>
+
           </div>
         </div>
       </section>
 
-      {/* How It Works Section - NEW */}
-      <section className="py-24 bg-muted/30 relative">
-        <div className="container">
+      {/* How It Works Section - Glass & Gradient */}
+      <section className="py-24 bg-muted/20 relative overflow-hidden bg-grain">
+        {/* Background gradient blob */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+        {/* The Pathr Line - Connecting The Steps */}
+        <div className="absolute top-1/2 left-0 w-full h-full hidden md:block pointer-events-none opacity-40">
+          <svg className="w-full h-full absolute top-0 left-0 z-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path
+              d="M0,160 C320,300, 420,0, 720,160 C1020,320, 1120,0, 1440,160"
+              fill="none"
+              stroke="url(#gradient-path)"
+              strokeWidth="4"
+              strokeDasharray="12 12"
+              className="animate-pulse"
+            />
+            <defs>
+              <linearGradient id="gradient-path" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#10B981" stopOpacity="0" />
+                <stop offset="50%" stopColor="#10B981" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <div className="container relative">
           <Reveal width="100%">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-4xl font-bold text-foreground">How It Works</h2>
-              <p className="mt-4 text-xl text-muted-foreground">Start your journey in 3 simple steps.</p>
+            <div className="text-center mb-16 relative z-10">
+              <span className="text-sm font-bold text-primary tracking-widest uppercase mb-2 block">Simple Process</span>
+              <h2 className="font-display text-4xl font-bold text-foreground md:text-5xl">How It Works</h2>
+              <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">Start your journey with Pathr in 3 simple steps.</p>
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
             {[
-              { title: "1. Create Profile", text: "Sign up and verify your details to join our trusted community.", icon: Users },
-              { title: "2. Find or Offer", text: "Search for a ride that matches your route, or offer your empty seats.", icon: Search },
-              { title: "3. Travel Together", text: "Meet your co-travelers, save money, and enjoy the ride.", icon: Car }
+              { title: "Create Profile", text: "Sign up instantly and verify your details to join our trusted community.", icon: Users, step: "01" },
+              { title: "Find or Offer", text: "Search for a ride that matches your route, or offer your empty seats.", icon: Search, step: "02" },
+              { title: "Travel Together", text: "Meet your co-travelers, save money, and enjoy the journey.", icon: Car, step: "03" }
             ].map((step, i) => (
               <Reveal key={i} delay={i * 200} width="100%">
-                <div className="flex flex-col items-center text-center group">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 text-2xl font-bold shadow-sm group-hover:scale-110 transition-transform">
-                    <step.icon className="w-10 h-10" />
+                <div className="relative p-8 rounded-[2rem] bg-white dark:bg-card border border-border/50 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group overflow-hidden h-full">
+                  {/* Step Number Watermark - Fixed for Light Mode */}
+                  <div className="absolute -right-4 -top-6 text-[150px] font-black text-primary/5 dark:text-white/5 select-none font-display z-0 group-hover:scale-110 transition-transform duration-700">
+                    {step.step}
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 font-display">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed max-w-xs">{step.text}</p>
+
+                  <div className="relative z-10 flex flex-col items-start h-full">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-white text-2xl mb-6 shadow-lg rotate-3 group-hover:rotate-6 transition-transform duration-300">
+                      <step.icon className="w-8 h-8" strokeWidth={2} />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 font-display text-foreground">{step.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed text-lg">{step.text}</p>
+                  </div>
+
+                  {/* Bottom Gradient Line */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                 </div>
               </Reveal>
             ))}
@@ -153,13 +188,17 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section - Animated & Floating */}
+      {/* Stats Section - Animated & Floating (Real Data) */}
       <section className="relative z-20 py-20 pointer-events-none">
         <div className="container pointer-events-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {stats.map((stat, index) => (
+            {[
+              { value: "3.7kg", label: "CO₂ Saved Per Trip", icon: Leaf, sub: "Source: Transport Canada" },
+              { value: "$1,500+", label: "Annual Savings", icon: Wallet, sub: "Average Commuter Savings" },
+              { value: "17 Tons", label: "Yearly CO₂ Reduction", icon: Car, sub: "Per 4-Person Carpool" },
+            ].map((stat, index) => (
               <Reveal key={stat.label} delay={index * 100} width="100%">
-                <div className="relative overflow-hidden rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 p-6 md:p-8 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/20 group text-center md:text-left">
+                <div className="relative overflow-hidden rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 p-6 md:p-8 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/20 group text-center md:text-left h-full">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300 transform translate-x-1/4 -translate-y-1/4">
                     <stat.icon className="w-24 h-24 text-primary" />
                   </div>
@@ -173,6 +212,9 @@ const Index = () => {
                     </p>
                     <p className="mt-1 text-sm md:text-base font-medium text-muted-foreground uppercase tracking-wider">
                       {stat.label}
+                    </p>
+                    <p className="text-xs text-muted-foreground/60 mt-2 italic border-t border-border/50 pt-2 w-full">
+                      {stat.sub}
                     </p>
                   </div>
 
@@ -195,7 +237,7 @@ const Index = () => {
         <div className="container relative">
           <Reveal width="100%">
             <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="font-display text-3xl font-bold text-foreground md:text-5xl drop-shadow-sm">Why Choose <span className="text-primary">CarPool?</span></h2>
+              <h2 className="font-display text-3xl font-bold text-foreground md:text-5xl drop-shadow-sm">Why Choose <span className="text-primary">Pathr?</span></h2>
               <p className="mt-6 text-xl text-muted-foreground leading-relaxed">
                 More than just a ride – it's a community of travelers making a difference.
               </p>
@@ -206,7 +248,7 @@ const Index = () => {
             {features.map((feature, index) => (
               <Reveal key={feature.title} delay={index * 150} width="100%">
                 <div
-                  className="group h-full rounded-3xl border border-border/40 bg-card/40 backdrop-blur-sm p-8 transition-all duration-500 
+                  className="group h-full rounded-3xl border border-border/60 bg-card/60 backdrop-blur-sm p-8 transition-all duration-500 
                   hover:border-primary/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] 
                   hover:-translate-y-2 hover:bg-card/80"
                 >

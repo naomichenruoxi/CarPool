@@ -1,6 +1,6 @@
 # Project Setup Guide
 
-Follow these steps to set up and run the CarPool application on a new machine.
+Follow these steps to set up and run the Pathr application on a new machine.
 
 ## Prerequisites
 -   **Node.js** (v18 or higher)
@@ -10,7 +10,7 @@ Follow these steps to set up and run the CarPool application on a new machine.
 ## 1. Clone the Repository
 ```bash
 git clone <your-repo-url>
-cd CarPool
+cd Pathr
 ```
 
 ## 2. Backend Setup

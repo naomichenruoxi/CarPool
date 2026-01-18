@@ -7,7 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Login = () => {
-    const { user } = useUser();
+    const { user, mockLogin } = useUser();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,6 +35,41 @@ const Login = () => {
                     />
                 </CardContent>
             </Card>
+
+            {/* Dev Login Buttons */}
+            {import.meta.env.DEV && (
+                <Card className="absolute top-4 right-4 w-64 card-shadow">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-bold">Dev Mode Login</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-2">
+                        <button
+                            onClick={() => mockLogin("mock-driver-alice", "Alice Driver")}
+                            className="bg-emerald-600 text-white p-2 rounded text-sm hover:bg-emerald-700 transition"
+                        >
+                            Login as Driver (Alice)
+                        </button>
+                        <button
+                            onClick={() => mockLogin("mock-passenger-bob", "Bob Passenger")}
+                            className="bg-blue-600 text-white p-2 rounded text-sm hover:bg-blue-700 transition"
+                        >
+                            Login as Passenger (Bob)
+                        </button>
+                        <button
+                            onClick={() => mockLogin("mock-driver-charlie", "Charlie Driver")}
+                            className="bg-emerald-600 text-white p-2 rounded text-sm hover:bg-emerald-700 transition"
+                        >
+                            Login as Driver (Charlie)
+                        </button>
+                        <button
+                            onClick={() => mockLogin("mock-passenger-david", "David Passenger")}
+                            className="bg-blue-600 text-white p-2 rounded text-sm hover:bg-blue-700 transition"
+                        >
+                            Login as Passenger (David)
+                        </button>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 };

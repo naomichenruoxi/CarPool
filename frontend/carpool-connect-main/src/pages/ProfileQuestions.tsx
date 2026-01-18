@@ -49,7 +49,7 @@ const ProfileQuestions = () => {
             Vibe Check ✨
           </h1>
           <p className="text-muted-foreground text-lg">
-            Help us match you with the perfect carpool buddies.
+            Help us match you with the perfect Pathr buddies.
           </p>
         </div>
 
