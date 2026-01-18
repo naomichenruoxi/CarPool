@@ -35,23 +35,31 @@ const RideRequestCard = ({ bookingId, initialData, onStatusUpdate }: RideRequest
     const loadDetails = async () => {
         setLoading(true);
         const data = await getBookingDetails(bookingId);
+        console.log("Booking Details Loaded:", data);
         if (data) {
             setDetails(data);
             // Load map directions after getting details
             if (data.booking.pickupAddress && data.booking.dropoffAddress) {
+                console.log("Loading directions for:", data.booking.pickupAddress, "to", data.booking.dropoffAddress);
                 loadDirections(data.booking);
+            } else {
+                console.warn("Missing pickup/dropoff address, cannot load map");
             }
         }
         setLoading(false);
     };
 
     const loadDirections = useCallback(async (booking: any) => {
-        if (!window.google?.maps) return;
+        if (!window.google?.maps) {
+            console.error("Window.google.maps not available!");
+            return;
+        }
 
         const directionsService = new google.maps.DirectionsService();
 
         // Original route (driver's trip)
         try {
+            console.log("Fetching original route:", booking.trip.origin, "->", booking.trip.destination);
             const originalResult = await directionsService.route({
                 origin: booking.trip.origin,
                 destination: booking.trip.destination,
@@ -65,6 +73,7 @@ const RideRequestCard = ({ bookingId, initialData, onStatusUpdate }: RideRequest
         // Modified route with pickup/dropoff
         if (booking.pickupAddress && booking.dropoffAddress) {
             try {
+                console.log("Fetching modified route...");
                 const modifiedResult = await directionsService.route({
                     origin: booking.trip.origin,
                     destination: booking.trip.destination,

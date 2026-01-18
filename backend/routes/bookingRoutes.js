@@ -73,10 +73,15 @@ router.post('/', authenticateUser, async (req, res) => {
 
 // Update Booking Status (Approve/Reject)
 // PATCH /api/bookings/:id/status
+const routeMatrixService = require('../services/routeMatrixService');
+
+// ...
+
+// Update Booking Status (Approve/Reject)
+// PATCH /api/bookings/:id/status
 router.patch('/:id/status', authenticateUser, async (req, res) => {
   const { status } = req.body; // 'APPROVED', 'REJECTED'
   const bookingId = Number(req.params.id);
-  console.log(`PATCH Status Update - Raw ID: ${req.params.id}, Parsed: ${bookingId}, Status: ${status}`);
 
   if (!['APPROVED', 'REJECTED'].includes(status)) {
     return res.status(400).json({ error: 'Invalid status' });
@@ -84,6 +89,7 @@ router.patch('/:id/status', authenticateUser, async (req, res) => {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      // Fetch booking + trip (with routeMeta)
       const booking = await tx.booking.findUnique({
         where: { id: bookingId },
         include: { trip: true }
@@ -96,26 +102,73 @@ router.patch('/:id/status', authenticateUser, async (req, res) => {
         throw { status: 403, message: 'Not authorized' };
       }
 
+      const trip = booking.trip;
+      let updatedRouteMeta = trip.routeMeta;
+
       if (status === 'APPROVED') {
-        // Check seats again
-        const freshTrip = await tx.trip.findUnique({ where: { id: booking.tripId } });
+        // 1. Check seats
+        const freshTrip = await tx.trip.findUnique({ where: { id: trip.id } });
         if (freshTrip.availableSeats <= 0) {
           throw { status: 400, message: 'No seats available to approve' };
         }
 
-        // Decrement seats
+        // 2. Decrement seats
         await tx.trip.update({
-          where: { id: booking.tripId },
+          where: { id: trip.id },
           data: { availableSeats: { decrement: 1 } }
         });
+
+        // 3. Update Matrix Cache (Advanced Algorithm)
+        if (booking.pickupAddress && booking.dropoffAddress) {
+          // Ensure Meta exists
+          let meta = trip.routeMeta;
+          if (!meta || !meta.matrix) {
+            meta = await routeMatrixService.initializeRoute(trip.origin, trip.destination);
+            meta.currentRouteIndices = [0, 1];
+          }
+
+          // Expand Matrix
+          const newPoints = [
+            { location: booking.pickupAddress, type: 'PICKUP' },
+            { location: booking.dropoffAddress, type: 'DROPOFF' }
+          ];
+          const expandedMeta = await routeMatrixService.expandMatrix(meta, newPoints);
+
+          // Find New Best Route Order
+          const pIndex = meta.waypoints.length;
+          const dIndex = meta.waypoints.length + 1;
+          const currentRouteIndices = meta.currentRouteIndices || [0, 1];
+
+          const bestInsertion = routeMatrixService.findBestInsertion(
+            expandedMeta,
+            currentRouteIndices,
+            pIndex,
+            dIndex
+          );
+
+          if (bestInsertion) {
+            // Save the new execution order and the expanded matrix
+            expandedMeta.currentRouteIndices = bestInsertion.routeIndices;
+            updatedRouteMeta = expandedMeta;
+          }
+        }
       }
 
-      const updated = await tx.booking.update({
+      // Update Booking Status
+      const updatedBooking = await tx.booking.update({
         where: { id: bookingId },
         data: { status }
       });
 
-      return updated;
+      // Update Trip with new Matrix (if changed)
+      if (updatedRouteMeta !== trip.routeMeta) {
+        await tx.trip.update({
+          where: { id: trip.id },
+          data: { routeMeta: updatedRouteMeta }
+        });
+      }
+
+      return updatedBooking;
     });
 
     res.json(result);
@@ -125,6 +178,8 @@ router.patch('/:id/status', authenticateUser, async (req, res) => {
     res.status(500).json({ error: 'Failed to update status' });
   }
 });
+
+
 
 // Get detailed booking info for driver (with detour calculation and AI match summary)
 // GET /api/bookings/:id/details

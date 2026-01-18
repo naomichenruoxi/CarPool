@@ -11,7 +11,7 @@ interface SearchFormProps {
   initialFrom?: string;
   initialTo?: string;
   initialDate?: string;
-  onSearch?: (from: string, to: string, date: string) => void;
+  onSearch?: (from: string, to: string, date: string, fromLat?: number, fromLng?: number, toLat?: number, toLng?: number) => void;
 }
 
 const SearchForm = ({
@@ -26,6 +26,9 @@ const SearchForm = ({
   const [to, setTo] = useState(initialTo);
   const [date, setDate] = useState(initialDate);
 
+  const [fromCoords, setFromCoords] = useState<{ lat: number, lng: number } | null>(null);
+  const [toCoords, setToCoords] = useState<{ lat: number, lng: number } | null>(null);
+
   // Address validation states (optional for search, but provides visual feedback)
   const [fromValidated, setFromValidated] = useState(false);
   const [toValidated, setToValidated] = useState(false);
@@ -34,12 +37,22 @@ const SearchForm = ({
     e.preventDefault();
 
     if (onSearch) {
-      onSearch(from, to, date);
+      onSearch(
+        from,
+        to,
+        date,
+        fromCoords?.lat,
+        fromCoords?.lng,
+        toCoords?.lat,
+        toCoords?.lng
+      );
     } else {
       const params = new URLSearchParams();
       if (from) params.set("from", from);
       if (to) params.set("to", to);
       if (date) params.set("date", date);
+      // Assuming URL navigation doesn't support hidden coords easily without state,
+      // but typically Search is used with onSearch handler in this app.
       navigate(`/search?${params.toString()}`);
     }
   };
@@ -63,7 +76,10 @@ const SearchForm = ({
             <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors z-10 ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
             <AddressAutocomplete
               value={from}
-              onChange={(val) => setFrom(val)}
+              onChange={(val, lat, lng) => {
+                setFrom(val);
+                if (lat && lng) setFromCoords({ lat, lng });
+              }}
               onValidationChange={setFromValidated}
               isValid={fromValidated}
               placeholder="Departure city"
@@ -83,7 +99,10 @@ const SearchForm = ({
             <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors z-10 ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
             <AddressAutocomplete
               value={to}
-              onChange={(val) => setTo(val)}
+              onChange={(val, lat, lng) => {
+                setTo(val);
+                if (lat && lng) setToCoords({ lat, lng });
+              }}
               onValidationChange={setToValidated}
               isValid={toValidated}
               placeholder="Destination city"
