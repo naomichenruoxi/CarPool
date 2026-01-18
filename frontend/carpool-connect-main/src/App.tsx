@@ -13,6 +13,7 @@ import OfferRide from "./pages/OfferRide";
 import CreateTrip from "./pages/CreateTrip";
 import Matches from "./pages/Matches";
 import Confirm from "./pages/Confirm";
+import Login from "./pages/Login";
 import ProfileQuestions from "./pages/ProfileQuestions";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,8 @@ const App = () => (
                 <Route path="/create-trip" element={<CreateTrip />} />
                 <Route path="/matches" element={<Matches />} />
                 <Route path="/confirm" element={<Confirm />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Login />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

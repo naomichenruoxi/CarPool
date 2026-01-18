@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { createRide } from "@/lib/mockData";
+import { submitTrip } from "@/api/trips";
 import { Calendar, Car, Clock, DollarSign, Loader2, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,7 +21,9 @@ const amenityOptions = [
 
 const OfferRide = () => {
   const navigate = useNavigate();
+  const { user, loading } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     from: "",
     to: "",
@@ -31,6 +34,17 @@ const OfferRide = () => {
     car: "",
     amenities: [] as string[],
   });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      toast.error("Please log in to offer a ride");
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,20 +65,21 @@ const OfferRide = () => {
     setIsSubmitting(true);
 
     // TODO: Replace with actual API call to create ride
-    const result = await createRide({
-      from: formData.from,
-      to: formData.to,
-      date: formData.date,
+    const result = await submitTrip({
+      startLocation: formData.from,
+      destination: formData.to,
+      date: formData.date as any, // Simple cast for now
       time: formData.time,
       price: parseFloat(formData.price),
       seats: parseInt(formData.seats),
       car: formData.car,
       amenities: formData.amenities,
+      role: 'driver'
     });
 
     if (result.success) {
       toast.success("Ride created successfully!");
-      navigate("/search");
+      navigate("/search"); // Redirect to search or dashboard
     } else {
       toast.error("Failed to create ride. Please try again.");
     }

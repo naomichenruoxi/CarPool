@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SearchForm from "@/components/rides/SearchForm";
 import RideCard from "@/components/rides/RideCard";
-import { searchRides, type Ride } from "@/lib/mockData";
+import { getTrips } from "@/api/trips";
+import { type Ride } from "@/lib/mockData"; // Keep type for now or redefine
 import { Loader2, SearchX } from "lucide-react";
 
 const Search = () => {
@@ -18,10 +19,33 @@ const Search = () => {
   const handleSearch = async (searchFrom: string, searchTo: string, searchDate: string) => {
     setIsLoading(true);
     setHasSearched(true);
-    
-    // TODO: Replace with actual API call
-    const results = await searchRides(searchFrom, searchTo, searchDate);
-    setRides(results);
+
+    try {
+      const results = await getTrips({ from: searchFrom, to: searchTo, date: searchDate });
+
+      // Adapt API data to Ride interface
+      const adaptedRides: Ride[] = results.map((t: any) => ({
+        id: t.id.toString(),
+        from: t.origin,
+        to: t.destination,
+        date: new Date(t.departureTime).toISOString().split('T')[0],
+        time: new Date(t.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        price: t.pricePerSeat,
+        seats: t.availableSeats,
+        driver: {
+          name: t.driver?.name || "Driver",
+          rating: 5.0,
+          trips: 0,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${t.driver?.name || 'driver'}`
+        },
+        amenities: [],
+        car: "Standard Car"
+      }));
+
+      setRides(adaptedRides);
+    } catch (e) {
+      console.error(e);
+    }
     setIsLoading(false);
   };
 
