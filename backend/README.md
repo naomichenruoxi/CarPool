@@ -50,6 +50,9 @@ Node.js + Express + Prisma + Supabase (PostgreSQL) backend for the Carpool Appli
 - `DELETE /api/trips/:id`: Delete a trip (driver).
 - `POST /api/bookings`: Book a seat.
 - `GET /api/bookings/me`: List my bookings.
+- `GET /api/bookings/driver`: List booking requests for my trips.
+- `POST /api/bookings/:id/accept`: Accept a booking request.
+- `POST /api/bookings/:id/reject`: Reject a booking request.
 - `DELETE /api/bookings/:id`: Cancel a booking.
 - `POST /api/ratings`: Create a rating.
 - `GET /api/ratings/user/:id`: Ratings for a user.

@@ -3,7 +3,7 @@ const router = express.Router();
 const prisma = require('../services/db');
 const authenticateUser = require('../middleware/auth');
 
-// Create a booking for a trip
+// Create a booking request (pending approval)
 // POST /api/bookings
 router.post('/', authenticateUser, async (req, res) => {
   const { tripId } = req.body;
@@ -41,19 +41,13 @@ router.post('/', authenticateUser, async (req, res) => {
         throw err;
       }
 
-      const created = await tx.booking.create({
+      return tx.booking.create({
         data: {
           tripId: tripIdNumber,
-          passengerId: req.user.id
+          passengerId: req.user.id,
+          status: 'PENDING'
         }
       });
-
-      await tx.trip.update({
-        where: { id: tripIdNumber },
-        data: { availableSeats: trip.availableSeats - 1 }
-      });
-
-      return created;
     });
 
     res.status(201).json(booking);
@@ -88,7 +82,130 @@ router.get('/me', authenticateUser, async (req, res) => {
   }
 });
 
-// Cancel a booking
+// List booking requests for trips owned by current driver
+// GET /api/bookings/driver
+router.get('/driver', authenticateUser, async (req, res) => {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: {
+        trip: { driverId: req.user.id }
+      },
+      include: {
+        trip: true,
+        passenger: { select: { id: true, name: true, email: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(bookings);
+  } catch (error) {
+    console.error('Error fetching driver bookings:', error);
+    res.status(500).json({ error: 'Failed to fetch driver bookings' });
+  }
+});
+
+// Accept a booking request (driver only)
+// POST /api/bookings/:id/accept
+router.post('/:id/accept', authenticateUser, async (req, res) => {
+  const bookingId = Number.parseInt(req.params.id, 10);
+  if (!Number.isFinite(bookingId)) {
+    return res.status(400).json({ error: 'Invalid booking id' });
+  }
+
+  try {
+    const booking = await prisma.$transaction(async (tx) => {
+      const existing = await tx.booking.findUnique({
+        where: { id: bookingId },
+        include: { trip: true }
+      });
+      if (!existing) {
+        const err = new Error('Booking not found');
+        err.status = 404;
+        throw err;
+      }
+      if (existing.trip.driverId !== req.user.id) {
+        const err = new Error('Not authorized to accept this booking');
+        err.status = 403;
+        throw err;
+      }
+      if (existing.status !== 'PENDING') {
+        const err = new Error('Booking is not pending');
+        err.status = 400;
+        throw err;
+      }
+      if (existing.trip.availableSeats <= 0) {
+        const err = new Error('No seats available');
+        err.status = 400;
+        throw err;
+      }
+
+      await tx.trip.update({
+        where: { id: existing.tripId },
+        data: { availableSeats: existing.trip.availableSeats - 1 }
+      });
+
+      return tx.booking.update({
+        where: { id: bookingId },
+        data: { status: 'ACCEPTED', respondedAt: new Date() }
+      });
+    });
+
+    res.json(booking);
+  } catch (error) {
+    if (error?.status) {
+      return res.status(error.status).json({ error: error.message });
+    }
+    console.error('Error accepting booking:', error);
+    res.status(500).json({ error: 'Failed to accept booking' });
+  }
+});
+
+// Reject a booking request (driver only)
+// POST /api/bookings/:id/reject
+router.post('/:id/reject', authenticateUser, async (req, res) => {
+  const bookingId = Number.parseInt(req.params.id, 10);
+  if (!Number.isFinite(bookingId)) {
+    return res.status(400).json({ error: 'Invalid booking id' });
+  }
+
+  try {
+    const booking = await prisma.$transaction(async (tx) => {
+      const existing = await tx.booking.findUnique({
+        where: { id: bookingId },
+        include: { trip: true }
+      });
+      if (!existing) {
+        const err = new Error('Booking not found');
+        err.status = 404;
+        throw err;
+      }
+      if (existing.trip.driverId !== req.user.id) {
+        const err = new Error('Not authorized to reject this booking');
+        err.status = 403;
+        throw err;
+      }
+      if (existing.status !== 'PENDING') {
+        const err = new Error('Booking is not pending');
+        err.status = 400;
+        throw err;
+      }
+
+      return tx.booking.update({
+        where: { id: bookingId },
+        data: { status: 'REJECTED', respondedAt: new Date() }
+      });
+    });
+
+    res.json(booking);
+  } catch (error) {
+    if (error?.status) {
+      return res.status(error.status).json({ error: error.message });
+    }
+    console.error('Error rejecting booking:', error);
+    res.status(500).json({ error: 'Failed to reject booking' });
+  }
+});
+
+// Cancel a booking (passenger only)
 // DELETE /api/bookings/:id
 router.delete('/:id', authenticateUser, async (req, res) => {
   const bookingId = Number.parseInt(req.params.id, 10);
@@ -97,34 +214,46 @@ router.delete('/:id', authenticateUser, async (req, res) => {
   }
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const booking = await tx.booking.findUnique({
-        where: { id: bookingId }
+    const booking = await prisma.$transaction(async (tx) => {
+      const existing = await tx.booking.findUnique({
+        where: { id: bookingId },
+        include: { trip: true }
       });
 
-      if (!booking) {
-        return { status: 404, error: 'Booking not found' };
+      if (!existing) {
+        const err = new Error('Booking not found');
+        err.status = 404;
+        throw err;
       }
-      if (booking.passengerId !== req.user.id) {
-        return { status: 403, error: 'Not authorized to cancel this booking' };
+      if (existing.passengerId !== req.user.id) {
+        const err = new Error('Not authorized to cancel this booking');
+        err.status = 403;
+        throw err;
+      }
+      if (existing.status === 'CANCELED') {
+        const err = new Error('Booking already canceled');
+        err.status = 400;
+        throw err;
       }
 
-      await tx.booking.delete({ where: { id: bookingId } });
+      if (existing.status === 'ACCEPTED') {
+        await tx.trip.update({
+          where: { id: existing.tripId },
+          data: { availableSeats: { increment: 1 } }
+        });
+      }
 
-      await tx.trip.update({
-        where: { id: booking.tripId },
-        data: { availableSeats: { increment: 1 } }
+      return tx.booking.update({
+        where: { id: bookingId },
+        data: { status: 'CANCELED', respondedAt: new Date() }
       });
-
-      return { booking };
     });
 
-    if (result.error) {
-      return res.status(result.status).json({ error: result.error });
-    }
-
-    res.json({ success: true });
+    res.json(booking);
   } catch (error) {
+    if (error?.status) {
+      return res.status(error.status).json({ error: error.message });
+    }
     console.error('Error canceling booking:', error);
     res.status(500).json({ error: 'Failed to cancel booking' });
   }
