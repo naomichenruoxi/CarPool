@@ -27,7 +27,7 @@ const SearchForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (onSearch) {
       onSearch(from, to, date);
     } else {
@@ -44,68 +44,78 @@ const SearchForm = ({
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div
-        className={`grid gap-4 ${
-          isHero
-            ? "grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto]"
-            : "grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto]"
-        }`}
+        className={`grid gap-5 ${isHero
+          ? "grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto]"
+          : "grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto]"
+          }`}
       >
-        <div className="space-y-2">
-          <Label htmlFor="from" className={isHero ? "text-primary-foreground/80" : ""}>
+        <div className="space-y-1.5 group">
+          <Label htmlFor="from" className={isHero ? "text-xs uppercase tracking-wider font-semibold text-white/80 ml-1" : ""}>
             From
           </Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-within:-translate-y-0.5">
+            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
             <Input
               id="from"
               placeholder="Departure city"
               value={from}
               onChange={(e) => setFrom(e.target.value)}
-              className={`pl-10 ${isHero ? "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60" : ""}`}
+              className={`pl-10 h-12 transition-all duration-300 ${isHero
+                ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
+                : ""
+                }`}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="to" className={isHero ? "text-primary-foreground/80" : ""}>
+        <div className="space-y-1.5 group">
+          <Label htmlFor="to" className={isHero ? "text-xs uppercase tracking-wider font-semibold text-white/80 ml-1" : ""}>
             To
           </Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-within:-translate-y-0.5">
+            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
             <Input
               id="to"
               placeholder="Destination city"
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className={`pl-10 ${isHero ? "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60" : ""}`}
+              className={`pl-10 h-12 transition-all duration-300 ${isHero
+                ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
+                : ""
+                }`}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="date" className={isHero ? "text-primary-foreground/80" : ""}>
+        <div className="space-y-1.5 group">
+          <Label htmlFor="date" className={isHero ? "text-xs uppercase tracking-wider font-semibold text-white/80 ml-1" : ""}>
             Date
           </Label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-within:-translate-y-0.5">
+            <Calendar className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
             <Input
               id="date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className={`pl-10 ${isHero ? "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground" : ""}`}
+              className={`pl-10 h-12 transition-all duration-300 ${isHero
+                ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
+                : ""
+                }`}
             />
           </div>
         </div>
 
-        <div className="flex items-end">
+        <div className="flex items-end pb-[1px]">
           <Button
             type="submit"
-            variant={isHero ? "heroOutline" : "default"}
             size="lg"
-            className="w-full"
+            className={`w-full h-12 text-base font-semibold shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${isHero
+              ? "bg-gradient-to-r from-primary to-emerald-600 hover:to-emerald-500 text-white border-0"
+              : ""
+              }`}
           >
-            <Search className="h-4 w-4" />
+            <Search className="h-5 w-5 mr-2" />
             Search
           </Button>
         </div>

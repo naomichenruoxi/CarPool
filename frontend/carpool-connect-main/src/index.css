@@ -110,4 +110,16 @@
   .button-shadow {
     box-shadow: var(--shadow-button);
   }
+
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 shadow-lg;
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-sm bg-card/80 border border-border/50 shadow-md transition-all duration-300;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
 }
