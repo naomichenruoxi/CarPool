@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Calendar, Search } from "lucide-react";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 
 interface SearchFormProps {
   variant?: "hero" | "inline";
@@ -49,17 +50,17 @@ const SearchForm = ({
           : "grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto]"
           }`}
       >
+
         <div className="space-y-1.5 group">
           <Label htmlFor="from" className={isHero ? "text-xs uppercase tracking-wider font-semibold text-white/80 ml-1" : ""}>
             From
           </Label>
           <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-within:-translate-y-0.5">
-            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
-            <Input
-              id="from"
-              placeholder="Departure city"
+            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors z-10 ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
+            <AddressAutocomplete
               value={from}
-              onChange={(e) => setFrom(e.target.value)}
+              onChange={(val) => setFrom(val)}
+              placeholder="Departure city"
               className={`pl-10 h-12 transition-all duration-300 ${isHero
                 ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
                 : ""
@@ -73,12 +74,11 @@ const SearchForm = ({
             To
           </Label>
           <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-within:-translate-y-0.5">
-            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
-            <Input
-              id="to"
-              placeholder="Destination city"
+            <MapPin className={`absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors z-10 ${isHero ? "text-emerald-400" : "text-primary/70 group-focus-within:text-primary"}`} />
+            <AddressAutocomplete
               value={to}
-              onChange={(e) => setTo(e.target.value)}
+              onChange={(val) => setTo(val)}
+              placeholder="Destination city"
               className={`pl-10 h-12 transition-all duration-300 ${isHero
                 ? "bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm shadow-sm focus:bg-white/20 focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50"
                 : ""

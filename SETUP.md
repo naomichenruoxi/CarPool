@@ -71,6 +71,7 @@ The frontend runs on port `5174` (or `5173`).
     ```env
     VITE_SUPABASE_URL="https://[ref].supabase.co"
     VITE_SUPABASE_KEY="[anon-public-key]"
+    VITE_GOOGLE_MAPS_API_KEY="[your-google-maps-key]"
     ```
     > **Note:** This key is safe to be public (starts with `eyJ...`).
 
