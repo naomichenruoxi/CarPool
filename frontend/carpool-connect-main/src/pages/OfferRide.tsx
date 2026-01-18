@@ -36,10 +36,10 @@ const OfferRide = () => {
   });
 
   useEffect(() => {
-    if (!loading && !user) {
-      toast.error("Please log in to offer a ride");
-      navigate("/login");
-    }
+    /*     if (!loading && !user) {
+          toast.error("Please log in to offer a ride");
+          navigate("/login");
+        } */
   }, [user, loading, navigate]);
 
   if (loading) {
@@ -88,189 +88,210 @@ const OfferRide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 md:py-12">
-      <div className="container max-w-2xl">
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-bold text-foreground md:text-4xl">
+    <div className="min-h-screen bg-background relative overflow-hidden py-12 md:py-20">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-grid-white/5 bg-[size:30px_30px] pointer-events-none" />
+
+      <div className="container max-w-2xl relative z-10">
+        <div className="mb-10 text-center">
+          <div className="inline-flex items-center justify-center p-3 mb-6 rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 shadow-lg shadow-primary/5">
+            <Car className="h-8 w-8" />
+          </div>
+          <h1 className="font-display text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent md:text-5xl drop-shadow-sm">
             Offer a Ride
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Share your journey and help others while earning money.
+          <p className="mt-4 text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            Turn your empty seats into savings. Share your journey and connect with great people.
           </p>
         </div>
 
-        <Card className="card-shadow animate-fade-in">
-          <CardHeader>
-            <CardTitle className="font-display">Trip Details</CardTitle>
-            <CardDescription>
-              Fill in the details of your trip to start receiving ride requests.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Route */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="from">From</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="from"
-                      name="from"
-                      placeholder="Departure city"
-                      value={formData.from}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="to">To</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="to"
-                      name="to"
-                      placeholder="Destination city"
-                      value={formData.to}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
+        <div className="relative group">
+          {/* Card Glow Effect */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-emerald-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
 
-              {/* Date & Time */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="date">Date</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="date"
-                      name="date"
-                      type="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="time">Departure Time</Label>
-                  <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="time"
-                      name="time"
-                      type="time"
-                      value={formData.time}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Price & Seats */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price per Seat ($)</Label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      min="1"
-                      placeholder="25"
-                      value={formData.price}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="seats">Available Seats</Label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="seats"
-                      name="seats"
-                      type="number"
-                      min="1"
-                      max="7"
-                      value={formData.seats}
-                      onChange={handleChange}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Car */}
-              <div className="space-y-2">
-                <Label htmlFor="car">Car Model</Label>
-                <div className="relative">
-                  <Car className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="car"
-                    name="car"
-                    placeholder="e.g., Toyota Camry 2022"
-                    value={formData.car}
-                    onChange={handleChange}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Amenities */}
-              <div className="space-y-3">
-                <Label>Amenities</Label>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {amenityOptions.map((amenity) => (
-                    <div key={amenity} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={amenity}
-                        checked={formData.amenities.includes(amenity)}
-                        onCheckedChange={() => handleAmenityToggle(amenity)}
+          <Card className="relative border-border/50 bg-card/40 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="space-y-1 pb-6 border-b border-border/50">
+              <CardTitle className="font-display text-2xl">Trip Details</CardTitle>
+              <CardDescription className="text-base">
+                Fill in your route and schedule to publish your ride.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Route */}
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2.5">
+                    <Label htmlFor="from" className="text-sm font-medium">From</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+                      <Input
+                        id="from"
+                        name="from"
+                        placeholder="Departure city"
+                        value={formData.from}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
                       />
-                      <Label
-                        htmlFor={amenity}
-                        className="text-sm font-normal text-foreground cursor-pointer"
-                      >
-                        {amenity}
-                      </Label>
                     </div>
-                  ))}
+                  </div>
+                  <div className="space-y-2.5">
+                    <Label htmlFor="to" className="text-sm font-medium">To</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500" />
+                      <Input
+                        id="to"
+                        name="to"
+                        placeholder="Destination city"
+                        value={formData.to}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating Ride...
-                  </>
-                ) : (
-                  "Publish Ride"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                {/* Date & Time */}
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2.5">
+                    <Label htmlFor="date">Date</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="date"
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2.5">
+                    <Label htmlFor="time">Departure Time</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="time"
+                        name="time"
+                        type="time"
+                        value={formData.time}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price & Seats */}
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2.5">
+                    <Label htmlFor="price">Price per Seat ($)</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="price"
+                        name="price"
+                        type="number"
+                        min="1"
+                        placeholder="25"
+                        value={formData.price}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2.5">
+                    <Label htmlFor="seats">Available Seats</Label>
+                    <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                      <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="seats"
+                        name="seats"
+                        type="number"
+                        min="1"
+                        max="7"
+                        value={formData.seats}
+                        onChange={handleChange}
+                        className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Car */}
+                <div className="space-y-2.5">
+                  <Label htmlFor="car">Car Model</Label>
+                  <div className="relative transition-all duration-300 focus-within:scale-[1.02]">
+                    <Car className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/70" />
+                    <Input
+                      id="car"
+                      name="car"
+                      placeholder="e.g., Toyota Camry 2022"
+                      value={formData.car}
+                      onChange={handleChange}
+                      className="pl-10 bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 h-11"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Amenities */}
+                <div className="space-y-4">
+                  <Label className="text-base font-semibold">Amenities</Label>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    {amenityOptions.map((amenity) => (
+                      <div
+                        key={amenity}
+                        className={`flex items-center space-x-3 p-3 rounded-xl border transition-all duration-200 cursor-pointer hover:bg-primary/5 ${formData.amenities.includes(amenity)
+                          ? "border-primary bg-primary/5"
+                          : "border-border/50 bg-background/30"
+                          }`}
+                        onClick={() => handleAmenityToggle(amenity)}
+                      >
+                        <Checkbox
+                          id={amenity}
+                          checked={formData.amenities.includes(amenity)}
+                          onCheckedChange={() => handleAmenityToggle(amenity)}
+                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        />
+                        <Label
+                          htmlFor={amenity}
+                          className="text-sm font-medium cursor-pointer flex-1"
+                        >
+                          {amenity}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full text-lg h-12 bg-gradient-to-r from-primary to-emerald-600 hover:to-emerald-500 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      Publishing Ride...
+                    </>
+                  ) : (
+                    "Publish Ride"
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
